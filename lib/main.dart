@@ -1,5 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:pedometer/pedometer.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
+// import 'package:web3_poc/util.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,13 +55,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // int _counter = 0;
-  // void _incrementCounter() {
-  //   setState(() {
-  //     _counter++;
-  //   });
-  // }
-
   String projectId = '48d96f799737c01d9bca749263a6a757';
   late W3MService _w3mService;
 
@@ -65,6 +62,43 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _initializeService();
+    initPedometer();
+  }
+
+  late Stream<StepCount> _stepCountStream;
+  late Stream<PedestrianStatus> _pedestrianStatusStream;
+  String _status = '?', _steps = '?';
+
+  void onStepCount(StepCount event) {
+    print(event);
+    setState(() {
+      _steps = event.steps.toString();
+    });
+  }
+
+  void onPedestrianStatusChanged(PedestrianStatus event) {
+    print(event);
+    setState(() {
+      _status = event.status;
+    });
+  }
+
+  void onPedestrianStatusError(error) {
+    print('onPedestrianStatusError: $error');
+  }
+
+  void onStepCountError(error) {
+    print('onStepCountError: $error');
+  }
+
+  void initPedometer() {
+    _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
+    _pedestrianStatusStream
+        .listen(onPedestrianStatusChanged)
+        .onError(onPedestrianStatusError);
+
+    _stepCountStream = Pedometer.stepCountStream;
+    _stepCountStream.listen(onStepCount).onError(onStepCountError);
   }
 
   void _initializeService() async {
@@ -92,17 +126,17 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  final _sepolia = W3MChainInfo(
-    chainName: 'Sepolia Testnet',
-    chainId: '11155111',
-    namespace: 'eip155:11155111',
-    tokenName: 'SEP',
-    rpcUrl: 'https://ethereum-sepolia.publicnode.com',
-    blockExplorer: W3MBlockExplorer(
-      name: 'Sepolia Etherscan',
-      url: 'https://sepolia.etherscan.io/',
-    ),
-  );
+  // final _sepolia = W3MChainInfo(
+  //   chainName: 'Sepolia Testnet',
+  //   chainId: '11155111',
+  //   namespace: 'eip155:11155111',
+  //   tokenName: 'SEP',
+  //   rpcUrl: 'https://ethereum-sepolia.publicnode.com',
+  //   blockExplorer: W3MBlockExplorer(
+  //     name: 'Sepolia Etherscan',
+  //     url: 'https://sepolia.etherscan.io/',
+  //   ),
+  // );
 
   void sendTransaction() async {
     _w3mService.launchConnectedWallet();
@@ -113,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green[200],
-        title: const Text('Web3 metamask poc'),
+        title: const Text('Web3 metamask '),
         // leading: IconButton(
         //   icon: const Icon(Icons.login),
         //   onPressed: () {},
@@ -123,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.more_vert),
             tooltip: 'Show Snackbar',
             onPressed: () {
+              print('Showing a snack bar');
               ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('This is a snackbar')));
             },
@@ -176,7 +211,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor:
                       MaterialStateProperty.all<Color?>(Colors.green[200])),
               child: const Text('Send Transaction'),
-            )
+            ),
+            Text('status: $_status'),
+            Text('steps taken: $_steps')
           ],
         ),
       ),

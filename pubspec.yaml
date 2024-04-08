@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   url_launcher: ^6.2.5
   web3modal_flutter: ^3.1.2
+  pedometer: ^4.0.1
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

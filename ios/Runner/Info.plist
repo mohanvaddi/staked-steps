@@ -45,31 +45,31 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-
-	<!-- to enable wallet auto-detection -->
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>metamask</string>
 		<string>trust</string>
 		<string>safe</string>
 		<string>rainbow</string>
-		<!-- Add other wallet schemes names here -->
 	</array>
-
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.example.yourBundleId</string> <!-- Bundle ID of your app -->
+			<string>com.example.yourBundleId</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<!-- your own custom scheme. Be mind of removing :// for this step -->
 				<string>flutterdapp</string>
 			</array>
 		</dict>
 	</array>
-
+	<key>NSMotionUsageDescription</key>
+	<string>This application tracks your steps</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+	</array>
 </dict>
 </plist>
