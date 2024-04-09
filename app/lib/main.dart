@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
-import 'package:web3_poc/navigation.dart';
+import 'package:web3_poc/custom_navigation.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 // import 'package:web3_poc/util.dart';
 

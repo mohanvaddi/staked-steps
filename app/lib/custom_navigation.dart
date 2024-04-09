@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:web3_poc/home.dart';
+import 'package:web3_poc/challenges_screen.dart';
+import 'package:web3_poc/profile_screen.dart';
 import 'package:web3_poc/theme.dart';
 
 void main() => runApp(const NavigationBarApp());
@@ -30,43 +31,6 @@ class _CustomNavigationState extends State<CustomNavigation> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return Scaffold(
-      // appbar
-      appBar: AppBar(
-        backgroundColor: CustomColors().PRIMARY_LIGHT,
-        title: const Text('Web3 metamask '),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            tooltip: 'Show Snackbar',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.navigate_next),
-            tooltip: 'Go to the next page',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute<void>(
-                builder: (BuildContext context) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: const Text('Next page'),
-                    ),
-                    body: const Center(
-                      child: Text(
-                        'This is the next page',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  );
-                },
-              ));
-            },
-          ),
-        ],
-      ),
-
       // bottom navgation bar
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -75,13 +39,13 @@ class _CustomNavigationState extends State<CustomNavigation> {
           });
         },
         indicatorColor: CustomColors().SECONDARY,
-        backgroundColor: CustomColors().PRIMARY_LIGHT,
+        backgroundColor: CustomColors().LIGHT,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
             selectedIcon: Icon(Icons.access_time_filled),
             icon: Icon(Icons.access_time_outlined),
-            label: 'Challenges',
+            label: 'Quests',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.settings),
@@ -93,13 +57,29 @@ class _CustomNavigationState extends State<CustomNavigation> {
 
       // navigation body
       body: <Widget>[
-        const HomeScreen(),
-        const Text('dsad'),
+        const ChallengesScreen(),
+        const ProfileScreen(),
       ][currentPageIndex],
 
       // fab button
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute<void>(
+            builder: (BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Create new Quest'),
+                ),
+                body: const Center(
+                  child: Text(
+                    'form to create public and private quests here',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ),
+              );
+            },
+          ));
+        },
         tooltip: 'Create Challenge',
         enableFeedback: true,
         backgroundColor: Colors.green[200],
