@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
+import 'package:web3_poc/navigation.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 // import 'package:web3_poc/util.dart';
 
@@ -32,7 +33,6 @@ class MyApp extends StatelessWidget {
             background100: (Colors.green[400])!,
             inverse100: Colors.black54,
           ),
-          // radiuses: Web3ModalRadiuses.square
         ),
         child: MaterialApp(
           title: 'Flutter',
@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _initializeService();
+    initWalletConnect();
     initPedometer();
   }
 
@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
   }
 
-  void _initializeService() async {
+  void initWalletConnect() async {
     // See https://docs.walletconnect.com/web3modal/flutter/custom-chains
     // W3MChainPresets.chains.putIfAbsent(_sepolia.chainId, () => _sepolia);
 
@@ -126,104 +126,34 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  // final _sepolia = W3MChainInfo(
-  //   chainName: 'Sepolia Testnet',
-  //   chainId: '11155111',
-  //   namespace: 'eip155:11155111',
-  //   tokenName: 'SEP',
-  //   rpcUrl: 'https://ethereum-sepolia.publicnode.com',
-  //   blockExplorer: W3MBlockExplorer(
-  //     name: 'Sepolia Etherscan',
-  //     url: 'https://sepolia.etherscan.io/',
-  //   ),
-  // );
-
   void sendTransaction() async {
     _w3mService.launchConnectedWallet();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green[200],
-        title: const Text('Web3 metamask '),
-        // leading: IconButton(
-        //   icon: const Icon(Icons.login),
-        //   onPressed: () {},
-        // ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            tooltip: 'Show Snackbar',
-            onPressed: () {
-              print('Showing a snack bar');
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.navigate_next),
-            tooltip: 'Go to the next page',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute<void>(
-                builder: (BuildContext context) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: const Text('Next page'),
-                    ),
-                    body: const Center(
-                      child: Text(
-                        'This is the next page',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  );
-                },
-              ));
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // const Text(
-            //   'You have pushed the button this many times:',
-            // ),
-            // Text(
-            //   '$_counter',
-            //   style: Theme.of(context).textTheme.headlineMedium,
-            // ),
-            W3MConnectWalletButton(
-              service: _w3mService,
-              state: ConnectButtonState.none,
-            ),
-            OutlinedButton(
-              onPressed: sendTransaction,
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color?>(Colors.green[200])),
-              child: const Text('Send Transaction'),
-            ),
-            Text('status: $_status'),
-            Text('steps taken: $_steps')
-          ],
-        ),
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: launchMetamask,
-      //   tooltip: 'Metamask',
-      //   enableFeedback: true,
-      //   backgroundColor: Colors.green[200],
-      //   child: const Icon(Icons.add),
+    return const Scaffold(
+      // body: Center(
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     children: <Widget>[
+      //       W3MConnectWalletButton(
+      //         service: _w3mService,
+      //         state: ConnectButtonState.none,
+      //       ),
+      //       OutlinedButton(
+      //         onPressed: sendTransaction,
+      //         style: ButtonStyle(
+      //             backgroundColor:
+      //                 MaterialStateProperty.all<Color?>(Colors.green[200])),
+      //         child: const Text('Send Transaction'),
+      //       ),
+      //       Text('status: $_status'),
+      //       Text('steps taken: $_steps')
+      //     ],
+      //   ),
       // ),
+      body: CustomNavigation(),
     );
   }
 }
