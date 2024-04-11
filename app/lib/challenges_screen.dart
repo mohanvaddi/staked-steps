@@ -118,7 +118,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                       color: _status == 'walking'
-                          ? CustomColors().PRIMARY_LIGHT
+                          ? Colors.green.shade700
                           : Colors.red.shade700,
                     ),
                   ),
