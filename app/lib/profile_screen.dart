@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:web3_poc/challenges_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pedometer/pedometer.dart';
 import 'package:web3_poc/theme.dart';
+import 'package:web3_poc/utils/pedometer.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,18 +12,93 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  int currentPageIndex = 0;
-  final _steps = '1802';
+  String _status = '?', _steps = '?';
+
+  @override
+  void initState() {
+    super.initState();
+    initPedometer(
+      (StepCount event) {
+        setState(() {
+          print(event);
+          _steps = event.steps.toString();
+        });
+      },
+      (PedestrianStatus event) {
+        setState(() {
+          print(event);
+          _status = event.status;
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CustomColors().LIGHT,
-        title: const Text(
-          'StreakQuest',
+        title: Text(
+          'Staked Steps',
+          style: GoogleFonts.teko(
+            textStyle: TextStyle(
+              color: Colors.green.shade700,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w800,
+              fontSize: 35.00,
+            ),
+          ),
         ),
         actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              showModalBottomSheet<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Container(
+                      height: 250,
+                      color: CustomColors().LIGHT,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              // padding: EdgeInsets.fromLTRB(20.0, 0, 20.0, 0),
+                              child: Center(
+                                child: RichText(
+                                  text: const TextSpan(
+                                    text:
+                                        'This number represents the total steps taken, this is calculated based on the pedometer available.\nIf the text is in green, it means you are currently moving, if It\'s red, it means you\'re idle.',
+                                    style: TextStyle(
+                                        fontSize: 14.0, color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            ElevatedButton(
+                              child: const Text('Understood'),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  });
+            },
+            child: Text(
+              _steps,
+              style: GoogleFonts.teko(
+                  textStyle: TextStyle(
+                fontSize: 30.0,
+                fontWeight: FontWeight.bold,
+                color: _status == 'walking'
+                    ? Colors.green.shade700
+                    : Colors.red.shade700,
+              )),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.more_vert),
             tooltip: 'Show Snackbar',
@@ -32,42 +109,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Card.outlined(
-            color: CustomColors().PRIMARY_LIGHT,
-            margin: const EdgeInsets.all(10.0),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Center(
-                child: Column(
-                  children: [
-                    Text(
-                      _steps,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 80.0),
-                    ),
-                    const Text(
-                      'Steps',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // OutlinedButton(
-          //   onPressed: () {
-          //     showAboutDialog(context: context);
-          //   },
-          //   style: ButtonStyle(
-          //     backgroundColor:
-          //         MaterialStateProperty.all<Color?>(CustomColors().PRIMARY),
-          //   ),
-          //   child: const Text('Send Transaction'),
-          // ),
-        ],
+      body: const Column(
+        children: <Widget>[],
       ),
     );
   }
