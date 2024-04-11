@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
-  "exclude": ["node_modules", "app"],
+  "exclude": ["node_modules", "app", "typechain-types"],
   "include": ["./**/*.ts", "./**/**/*.ts", "./.eslintrc.cjs"],
   "files": ["./hardhat.config.ts"]
 }

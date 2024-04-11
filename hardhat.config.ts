@@ -1,20 +1,17 @@
+import dotenv from 'dotenv';
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
+dotenv.config();
 
-const { NETWORK, ACCOUNT_PRIVATE_KEY, POLYGONSCAN_KEY } = process.env;
+const { NETWORK, ACCOUNT_PRIVATE_KEY, POLYGONSCAN_KEY, JSON_RPC_URL, CHAIN_ID } = process.env;
 
 const config: HardhatUserConfig = {
-  solidity: '0.8.19',
-  defaultNetwork: NETWORK,
+  solidity: '0.8.20',
+  defaultNetwork: 'default',
   networks: {
-    matic_mumbai: {
-      url: 'https://rpc-mumbai.maticvigil.com',
-      chainId: 80001,
-      accounts: [ACCOUNT_PRIVATE_KEY!],
-    },
-    polygon: {
-      url: 'https://polygon-mainnet.infura.io',
-      chainId: 137,
+    default: {
+      url: JSON_RPC_URL!,
+      chainId: parseInt(CHAIN_ID!),
       accounts: [ACCOUNT_PRIVATE_KEY!],
     },
   },
