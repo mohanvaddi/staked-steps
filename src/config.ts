@@ -8,6 +8,7 @@ const config = {
   CONTRACT_ADDRESS: process.env['CONTRACT_ADDRESS']!,
   ACCOUNT_PRIVATE_KEY: process.env['ACCOUNT_PRIVATE_KEY']!,
   JSON_RPC_URL: process.env['JSON_RPC_URL']!,
+  LIGHTHOUSE_STORAGE_API_KEY: process.env["LIGHTHOUSE_STORAGE_API_KEY"],
 };
 
 export default config;

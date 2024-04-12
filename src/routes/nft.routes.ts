@@ -1,7 +1,9 @@
 import { NextFunction, Router, Request, Response } from 'express';
 import { ethers } from 'hardhat';
-import config from './config';
-import { BaseContract } from '../typechain-types';
+import multer from 'multer';
+import config from '../config';
+import { BaseContract } from '../../typechain-types';
+import { uploadImageToIpfs } from '../services/storage.service';
 
 const router = Router();
 
@@ -34,14 +36,19 @@ router.get('/:tokenId', async (req: Request, res: Response, next: NextFunction) 
   });
 });
 
-router.post('/mintNft', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/mintNft', multer().single('image'), async (req: Request, res: Response, next: NextFunction) => {
   // TODO: create token metadata based on user's challenge and image ipfs url
+  if(!req.file) {
+    return res.send("Image file is missing!");
+  }
+  const image = req.file;
+  const imageIpfsUrl = await uploadImageToIpfs(Buffer.from(image.buffer));
+
   const tokenMetadata = {
     name: 'Fresh Lily - Fresh Market',
     description:
       'Treat yourself or make a perfect gift with Weekly Fresh Lily. Simply visit our store at your preferred time and collect your Lily (Max 4 weeks).',
-    image:
-      'https://storage.googleapis.com/inm-atg-retailer-nft-uat-media/offerTemplates/22/addfac5296387e119310c6797a1bc66c-6c69dda1917945a6a9602a31d555166c_3P_en_US_450_450.png',
+    image: imageIpfsUrl
   };
   const tokenUri = formatTokenUri(tokenMetadata);
   const contract = await getContractInstance();
