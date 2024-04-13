@@ -45,3 +45,10 @@ class ChallengeData {
     );
   }
 }
+
+class ContractInfo {
+  final String address;
+  final List<dynamic> abi;
+
+  ContractInfo({required this.address, required this.abi});
+}

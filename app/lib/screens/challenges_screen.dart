@@ -20,6 +20,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
   String _status = '?', _steps = '?';
   late Future<void> futureChallenges;
   late List<ChallengeData> challengesList;
+  late ContractInfo contractInfo;
 
   @override
   void initState() {
@@ -41,6 +42,10 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
 
     futureChallenges = _initChallenges();
   }
+
+  // Future<void> _initABI() async {
+  //   final ContractInfo _contractInfo = await api_util.fetchContractInfo();
+  // }
 
   Future<void> _initChallenges() async {
     final List<ChallengeData> challenges = await api_util.fetchChallengeData();
