@@ -1,5 +1,5 @@
-name: web3_poc
-description: 'A new Flutter project.'
+name: staked_steps
+description: 'A gamified fitness app where users can join public or private challenges by staking cryptocurrency. Participants aim to meet a minimum step count within a set timeframe to win. Winners receive cryptocurrency prizes and unique NFTs.'
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -39,6 +39,7 @@ dependencies:
   pedometer: ^4.0.1
   permission_handler: ^11.3.1
   google_fonts: ^6.2.1
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:

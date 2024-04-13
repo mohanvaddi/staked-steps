@@ -1,8 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:pedometer/pedometer.dart';
-import 'package:web3_poc/custom_navigation.dart';
+import 'package:staked_steps/custom_navigation.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 // import 'package:web3_poc/util.dart';
 
@@ -62,25 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     initWalletConnect();
-    initPedometer();
-  }
-
-  late Stream<StepCount> _stepCountStream;
-  late Stream<PedestrianStatus> _pedestrianStatusStream;
-  String _status = '?', _steps = '?';
-
-  void onStepCount(StepCount event) {
-    print(event);
-    setState(() {
-      _steps = event.steps.toString();
-    });
-  }
-
-  void onPedestrianStatusChanged(PedestrianStatus event) {
-    print(event);
-    setState(() {
-      _status = event.status;
-    });
   }
 
   void onPedestrianStatusError(error) {
@@ -89,16 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void onStepCountError(error) {
     print('onStepCountError: $error');
-  }
-
-  void initPedometer() {
-    _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
-    _pedestrianStatusStream
-        .listen(onPedestrianStatusChanged)
-        .onError(onPedestrianStatusError);
-
-    _stepCountStream = Pedometer.stepCountStream;
-    _stepCountStream.listen(onStepCount).onError(onStepCountError);
   }
 
   void initWalletConnect() async {

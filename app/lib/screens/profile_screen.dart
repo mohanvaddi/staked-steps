@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedometer/pedometer.dart';
-import 'package:web3_poc/theme.dart';
-import 'package:web3_poc/utils/pedometer.dart';
+import 'package:staked_steps/theme.dart';
+import 'package:staked_steps/utils/pedometer.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
