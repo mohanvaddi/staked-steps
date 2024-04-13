@@ -1,10 +1,14 @@
 import express from 'express';
 import config from './config';
-import nftRouter from './nft-router';
-import { Request, Response } from 'express';
+import nftRouter from './routes/nft.routes';
+import type { Request, Response } from 'express';
 
 const app = express();
 const port = config.PORT;
+
+app.get('/', (req, res) => {
+  res.send('Not Dead!');
+});
 
 app.use('/nft', nftRouter);
 
