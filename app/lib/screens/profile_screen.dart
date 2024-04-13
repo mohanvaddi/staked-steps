@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:staked_steps/theme.dart';
 import 'package:staked_steps/utils/pedometer.dart';
+import 'package:staked_steps/utils/util.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,13 +21,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     initPedometer(
       (StepCount event) {
         setState(() {
-          print(event);
+          kPrint(event);
           _steps = event.steps.toString();
         });
       },
       (PedestrianStatus event) {
         setState(() {
-          print(event);
+          kPrint(event);
           _status = event.status;
         });
       },

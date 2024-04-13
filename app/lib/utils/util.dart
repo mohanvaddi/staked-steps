@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 
 final _sepolia = W3MChainInfo(
@@ -11,3 +12,9 @@ final _sepolia = W3MChainInfo(
     url: 'https://sepolia.etherscan.io/',
   ),
 );
+
+void kPrint(Object? object) {
+  if (kDebugMode) {
+    print(object);
+  }
+}
