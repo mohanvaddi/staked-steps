@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:web3_poc/challenges_screen.dart';
-import 'package:web3_poc/profile_screen.dart';
-import 'package:web3_poc/theme.dart';
+import 'package:staked_steps/screens/challenges_screen.dart';
+import 'package:staked_steps/screens/profile_screen.dart';
+import 'package:staked_steps/theme.dart';
 
 void main() => runApp(const NavigationBarApp());
 
@@ -29,7 +29,7 @@ class _CustomNavigationState extends State<CustomNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    // final ThemeData theme = Theme.of(context);
     return Scaffold(
       // bottom navgation bar
       bottomNavigationBar: NavigationBar(
