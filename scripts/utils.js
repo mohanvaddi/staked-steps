@@ -1,7 +1,6 @@
 import { ethers } from 'hardhat';
 import { DeployOptions } from '../types';
 import config from '../src/config';
-import type {} from 'hardhat';
 
 export async function deploy() {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);

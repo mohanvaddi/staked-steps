@@ -1,7 +1,6 @@
 import express from 'express';
-import config from './config';
-import nftRouter from './routes/nft.routes';
-import type { Request, Response } from 'express';
+import config from './config.js';
+import nftRouter from './routes/nft.routes.js';
 
 const app = express();
 const port = config.PORT;
@@ -14,7 +13,7 @@ app.use('/nft', nftRouter);
 
 // to dynamically get recent ABI and CONTRACT_ADDRESS in the frontend
 // ABI and contract address are needed to interact with smart contract functions from any web3 client.
-app.get('/contract-info', (req: Request, res: Response) => {
+app.get('/contract-info', (req, res) => {
   return res.json({
     address: config.CONTRACT_ADDRESS,
     abi: require('../artifacts/contracts/BaseContract.sol/BaseContract.json').abi,
