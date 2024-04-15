@@ -7,6 +7,7 @@ import 'package:staked_steps/utils/api_utils.dart' as api_util;
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:staked_steps/widgets/CustomScreenLayout.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
+import 'package:full_screen_image/full_screen_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key, required this.w3mService});
@@ -98,13 +99,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             itemCount: nftList.length,
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
+                              crossAxisCount: 2,
                             ),
                             itemBuilder: (BuildContext context, int index) {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: GestureDetector(
-                                  onTap: () {},
+                                child: FullScreenWidget(
+                                  disposeLevel: DisposeLevel.High,
+                                  backgroundIsTransparent: true,
+                                  backgroundColor: Colors.green.shade50,
                                   child: Image.network(
                                     nftList[index].image,
                                   ),
