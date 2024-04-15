@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:staked_steps/custom_navigation.dart';
+import 'package:staked_steps/CustomNavigation.dart';
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 
