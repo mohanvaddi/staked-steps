@@ -46,6 +46,28 @@ class ChallengeData {
   }
 }
 
+class Nft {
+  final String id;
+  final String name;
+  final String description;
+  final String image;
+
+  Nft({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.image,
+  });
+
+  factory Nft.fromJson(dynamic json) {
+    return Nft(
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        image: json['image']);
+  }
+}
+
 class ContractInfo {
   final String address;
   final List<dynamic> abi;

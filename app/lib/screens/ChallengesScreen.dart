@@ -113,13 +113,12 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                             itemCount: challengesList.length,
                             itemBuilder: (BuildContext context, int index) {
                               var challenge = challengesList[index];
-                              var stakedAmount =
-                                  challengesList[index].stakedAmount;
                               return ListTile(
                                 tileColor: Colors.green.shade50,
                                 title: Text(challenge.challengeName),
                                 subtitle: const Text('progress'),
-                                trailing: Text('$stakedAmount ETH'),
+                                trailing: Text(
+                                    '${challengesList[index].stakedAmount} ETH'),
                                 enableFeedback: true,
                                 leading: CircularProgressIndicator(
                                   color: Colors.green.shade400,

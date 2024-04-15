@@ -20,7 +20,7 @@ app.get('/contract-info', (req, res) => {
   });
 });
 
-app.get('/mock_challenges', (req, res) => {
+app.get('/mockChallenges', (req, res) => {
   res.json({
     challenges: [
       {
@@ -93,6 +93,29 @@ app.get('/mock_challenges', (req, res) => {
       },
     ],
   });
+});
+
+app.get('/mockNfts', (req, res) => {
+  res.json([
+    {
+      id: '1',
+      name: 'NFT 1',
+      description: 'Description should be visible here',
+      image: 'https://gateway.lighthouse.storage/ipfs/QmTy5JMBEqpoSsFqNpqyzSVWUKQkKAbbQjkCpHjCRgD5aL',
+    },
+    {
+      id: '11',
+      name: 'NFT 2',
+      description: 'Description should be visible here',
+      image: 'https://gateway.lighthouse.storage/ipfs/QmU75s7GhM76Kwy7dk7xarZYPoNx5d2g5fKftBKVN5cKbX',
+    },
+    // {
+    //   id: '3',
+    //   name: 'NFT 1',
+    //   description: 'Description should be visible here',
+    //   image: 'https://gateway.lighthouse.storage/ipfs/QmTy5JMBEqpoSsFqNpqyzSVWUKQkKAbbQjkCpHjCRgD5aL',
+    // },
+  ]);
 });
 
 app.listen(port, () => {
