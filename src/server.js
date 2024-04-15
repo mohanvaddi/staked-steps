@@ -109,12 +109,24 @@ app.get('/mockNfts', (req, res) => {
       description: 'Description should be visible here',
       image: 'https://gateway.lighthouse.storage/ipfs/QmU75s7GhM76Kwy7dk7xarZYPoNx5d2g5fKftBKVN5cKbX',
     },
-    // {
-    //   id: '3',
-    //   name: 'NFT 1',
-    //   description: 'Description should be visible here',
-    //   image: 'https://gateway.lighthouse.storage/ipfs/QmTy5JMBEqpoSsFqNpqyzSVWUKQkKAbbQjkCpHjCRgD5aL',
-    // },
+    {
+      id: '3',
+      name: 'NFT 1',
+      description: 'Description should be visible here',
+      image: 'https://gateway.lighthouse.storage/ipfs/QmTy5JMBEqpoSsFqNpqyzSVWUKQkKAbbQjkCpHjCRgD5aL',
+    },
+    {
+      id: '11',
+      name: 'NFT 2',
+      description: 'Description should be visible here',
+      image: 'https://gateway.lighthouse.storage/ipfs/QmU75s7GhM76Kwy7dk7xarZYPoNx5d2g5fKftBKVN5cKbX',
+    },
+    {
+      id: '3',
+      name: 'NFT 1',
+      description: 'Description should be visible here',
+      image: 'https://gateway.lighthouse.storage/ipfs/QmTy5JMBEqpoSsFqNpqyzSVWUKQkKAbbQjkCpHjCRgD5aL',
+    },
   ]);
 });
 

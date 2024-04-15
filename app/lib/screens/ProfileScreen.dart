@@ -86,30 +86,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     case ConnectionState.done:
                       {
-                        // if (nftList == null) {
-                        //   // Return a placeholder or loading indicator until nftList is initialized
-                        //   return const Center(
-                        //     child: CircularProgressIndicator(),
-                        //   );
-                        // }
+                        // changing cross axis count based on total
+                        var crossAxisCount = nftList.length > 4 ? 3 : 2;
 
                         return RefreshIndicator(
                           onRefresh: _refreshNftList,
                           child: GridView.builder(
                             itemCount: nftList.length,
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
                             ),
                             itemBuilder: (BuildContext context, int index) {
                               return Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(5.0),
                                 child: FullScreenWidget(
                                   disposeLevel: DisposeLevel.High,
                                   backgroundIsTransparent: true,
                                   backgroundColor: Colors.green.shade50,
                                   child: Image.network(
                                     nftList[index].image,
+                                    // fit: BoxFit.fitWidth,
                                   ),
                                 ),
                               );
