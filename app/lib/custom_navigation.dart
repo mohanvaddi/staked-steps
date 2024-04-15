@@ -2,23 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:staked_steps/screens/challenges_screen.dart';
 import 'package:staked_steps/screens/profile_screen.dart';
 import 'package:staked_steps/theme.dart';
-
-void main() => runApp(const NavigationBarApp());
-
-class NavigationBarApp extends StatelessWidget {
-  const NavigationBarApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      home: const CustomNavigation(),
-    );
-  }
-}
+import 'package:web3modal_flutter/web3modal_flutter.dart';
 
 class CustomNavigation extends StatefulWidget {
-  const CustomNavigation({super.key});
+  const CustomNavigation({super.key, required this.w3mService});
+
+  final W3MService w3mService;
 
   @override
   State<CustomNavigation> createState() => _CustomNavigationState();
@@ -57,8 +46,12 @@ class _CustomNavigationState extends State<CustomNavigation> {
 
       // navigation body
       body: <Widget>[
-        const ChallengesScreen(),
-        const ProfileScreen(),
+        ChallengesScreen(
+          w3mService: widget.w3mService,
+        ),
+        ProfileScreen(
+          w3mService: widget.w3mService,
+        ),
       ][currentPageIndex],
 
       // fab button

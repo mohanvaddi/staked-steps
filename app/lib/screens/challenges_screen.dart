@@ -5,12 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:staked_steps/structs.dart';
 import 'package:staked_steps/theme.dart';
-import 'package:staked_steps/utils/pedometer.dart';
-import 'package:staked_steps/utils/api_util.dart' as api_util;
-import 'package:staked_steps/utils/util.dart';
+import 'package:staked_steps/utils/pedometer_utils.dart';
+import 'package:staked_steps/utils/api_utils.dart' as api_util;
+import 'package:staked_steps/utils/common_utils.dart';
+import 'package:web3modal_flutter/web3modal_flutter.dart';
 
 class ChallengesScreen extends StatefulWidget {
-  const ChallengesScreen({super.key});
+  const ChallengesScreen({super.key, required this.w3mService});
+
+  final W3MService w3mService;
 
   @override
   State<ChallengesScreen> createState() => _ChallengesScreenState();
@@ -70,6 +73,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: CustomColors().LIGHT,
             title: Text(
               'Staked Steps',
@@ -116,11 +120,15 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.more_vert),
-                tooltip: 'Show Snackbar',
+                icon: const Icon(Icons.logout),
+                tooltip: 'Log Out',
                 onPressed: () {
+                  widget.w3mService.disconnect();
                   ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('This is a snackbar')));
+                    const SnackBar(
+                      content: Text('Wallet Disconnected.'),
+                    ),
+                  );
                 },
               ),
             ],
