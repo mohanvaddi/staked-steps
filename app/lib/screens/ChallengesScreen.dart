@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:staked_steps/structs.dart';
 import 'package:staked_steps/constants.dart';
+import 'package:staked_steps/tabs/OngoingQuests.dart';
 import 'package:staked_steps/utils/pedometer_utils.dart';
 import 'package:staked_steps/utils/api_utils.dart' as api_util;
 import 'package:staked_steps/utils/common_utils.dart';
@@ -62,8 +63,6 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     });
   }
 
-  final List<String> entries = <String>['A', 'B', 'C'];
-  final List<int> colorCodes = <int>[600, 500, 100];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,18 +74,8 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         body: TabBarView(
           children: <Widget>[
             Center(
-              child: ListView.separated(
-                padding: const EdgeInsets.all(8),
-                itemCount: entries.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    height: 50,
-                    color: Colors.amber[colorCodes[index]],
-                    child: Center(child: Text('Entry ${entries[index]}')),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
+              child: OngoingQuests(
+                w3mService: widget.w3mService,
               ),
             ),
             Center(
@@ -113,13 +102,12 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                             itemCount: challengesList.length,
                             itemBuilder: (BuildContext context, int index) {
                               var challenge = challengesList[index];
-                              var stakedAmount =
-                                  challengesList[index].stakedAmount;
                               return ListTile(
                                 tileColor: Colors.green.shade50,
                                 title: Text(challenge.challengeName),
                                 subtitle: const Text('progress'),
-                                trailing: Text('$stakedAmount ETH'),
+                                trailing: Text(
+                                    '${challengesList[index].stakedAmount} ETH'),
                                 enableFeedback: true,
                                 leading: CircularProgressIndicator(
                                   color: Colors.green.shade400,

@@ -118,6 +118,9 @@ class _LoginState extends State<Login> {
     } else {
       setState(() {});
     }
+
+    // TODO: remove this :)
+    changeRoute('defaultChange', Pages.home);
   }
 
   void sendTransaction() async {

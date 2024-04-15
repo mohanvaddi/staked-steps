@@ -27,7 +27,7 @@ class _CustomNavigationState extends State<CustomNavigation> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: CustomColors().SECONDARY,
+        indicatorColor: CustomColors().PRIMARY,
         backgroundColor: CustomColors().LIGHT,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
@@ -61,7 +61,7 @@ class _CustomNavigationState extends State<CustomNavigation> {
             builder: (BuildContext context) {
               return Scaffold(
                 appBar: AppBar(
-                  title: const Text('Create new Quest'),
+                  title: const Text('Create Quest'),
                 ),
                 body: const Center(
                   child: Text(
@@ -73,9 +73,9 @@ class _CustomNavigationState extends State<CustomNavigation> {
             },
           ));
         },
-        tooltip: 'Create Challenge',
+        tooltip: 'Create Quest',
         enableFeedback: true,
-        backgroundColor: Colors.green[200],
+        backgroundColor: CustomColors().PRIMARY,
         child: const Icon(Icons.add_task_outlined),
       ),
     );
