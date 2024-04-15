@@ -1,30 +1,30 @@
-import { NextFunction, Router, Request, Response } from 'express';
-import { ethers } from 'hardhat';
+import { Router } from 'express';
+import hardhat from 'hardhat';
 import multer from 'multer';
-import config from '../config';
-import { BaseContract } from '../../typechain-types';
-import { uploadImageToIpfs } from '../services/storage.service';
+import config from '../config.js';
+import { uploadImageToIpfs } from '../services/storage.service.js';
+const { ethers } = hardhat;
 
 const router = Router();
 
-export const formatTokenUri = <T>(data: T) => {
+export const formatTokenUri = (data) => {
   return 'data:application/json;base64,' + btoa(JSON.stringify(data));
 };
 
-export const unformatTokenUri = (tokenUri: string) => {
+export const unformatTokenUri = (tokenUri) => {
   const base64Data = tokenUri.replace('data:application/json;base64,', '');
   const jsonData = atob(base64Data);
   return JSON.parse(jsonData);
 };
 
-const getContractInstance = async (): Promise<BaseContract> => {
+const getContractInstance = async () => {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
   const signer = new ethers.Wallet(config.ACCOUNT_PRIVATE_KEY, provider);
-  const contract: any = await ethers.getContractAt('BaseNFT', config.CONTRACT_ADDRESS, signer);
+  const contract = await ethers.getContractAt('BaseContract', config.CONTRACT_ADDRESS, signer);
   return contract;
 };
 
-router.get('/:tokenId', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/:tokenId', async (req, res, next) => {
   const tokenId = req.params['tokenId'];
   const contract = await getContractInstance();
   const tokenUri = await contract.getTokenMetadata(tokenId);
@@ -36,10 +36,10 @@ router.get('/:tokenId', async (req: Request, res: Response, next: NextFunction) 
   });
 });
 
-router.post('/mintNft', multer().single('image'), async (req: Request, res: Response, next: NextFunction) => {
+router.post('/mintNft', multer().single('image'), async (req, rese, next) => {
   // TODO: create token metadata based on user's challenge and image ipfs url
-  if(!req.file) {
-    return res.send("Image file is missing!");
+  if (!req.file) {
+    return res.send('Image file is missing!');
   }
   const image = req.file;
   const imageIpfsUrl = await uploadImageToIpfs(Buffer.from(image.buffer));
@@ -48,7 +48,7 @@ router.post('/mintNft', multer().single('image'), async (req: Request, res: Resp
     name: 'Fresh Lily - Fresh Market',
     description:
       'Treat yourself or make a perfect gift with Weekly Fresh Lily. Simply visit our store at your preferred time and collect your Lily (Max 4 weeks).',
-    image: imageIpfsUrl
+    image: imageIpfsUrl,
   };
   const tokenUri = formatTokenUri(tokenMetadata);
   const contract = await getContractInstance();

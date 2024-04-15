@@ -2,30 +2,25 @@
   "name": "staked-steps",
   "author": "Mohan Vaddi <myselfgeek01@gmail.com>",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "compile": "npx hardhat compile --force --show-stack-traces",
     "clean": "npx hardhat clean",
-    "dev": "ts-node-dev --require dotenv/config --respawn --transpile-only src/server.ts",
-    "compile:deploy": "npx hardhat compile && npx ts-node scripts/deploy.ts"
+    "dev": "nodemon src/server.js",
+    "compile:deploy": "npx hardhat compile && node scripts/deploy.js"
   },
   "keywords": [],
   "license": "ISC",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@types/express": "^4.17.21",
-    "@types/multer": "^1.4.11",
-    "hardhat": "^2.22.2",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.4"
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0"
   },
   "dependencies": {
     "@lighthouse-web3/sdk": "^0.3.0",
     "@openzeppelin/contracts": "^5.0.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "multer": "1.4.5-lts.1"
+    "multer": "1.4.5-lts.1",
+    "nodemon": "^3.1.0"
   }
 }
