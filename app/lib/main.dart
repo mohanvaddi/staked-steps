@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:staked_steps/login.dart';
+import 'package:staked_steps/Login.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 
 void main() {

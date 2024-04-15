@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:staked_steps/home.dart';
-import 'package:staked_steps/theme.dart';
+import 'package:staked_steps/Home.dart';
+import 'package:staked_steps/constants.dart';
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
-
-enum Pages { home, login }
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:staked_steps/screens/challenges_screen.dart';
-import 'package:staked_steps/screens/profile_screen.dart';
-import 'package:staked_steps/theme.dart';
+import 'package:staked_steps/screens/ChallengesScreen.dart';
+import 'package:staked_steps/screens/ProfileScreen.dart';
+import 'package:staked_steps/constants.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 
 class CustomNavigation extends StatefulWidget {
