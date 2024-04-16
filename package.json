@@ -7,7 +7,7 @@
   "scripts": {
     "compile": "npx hardhat compile --force --show-stack-traces",
     "clean": "npx hardhat clean",
-    "dev": "nodemon src/server.js",
+    "dev": "nodemon --ignore app src/server.js",
     "compile:deploy": "npx hardhat compile && node scripts/deploy.js"
   },
   "keywords": [],

@@ -1,5 +1,6 @@
-import { ethers } from 'hardhat';
-import config from '../src/config';
+import hardhat from 'hardhat';
+import config from '../src/config.js';
+const { ethers } = hardhat;
 
 async function deploy() {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
