@@ -1,6 +1,7 @@
 import express from 'express';
 import config from './config.js';
 import nftRouter from './routes/nft.routes.js';
+import baseContractJson from '../artifacts/contracts/BaseContract.sol/BaseContract.json' assert { type: 'json' };
 
 const app = express();
 const port = config.PORT;
@@ -16,7 +17,7 @@ app.use('/nft', nftRouter);
 app.get('/contract-info', (req, res) => {
   return res.json({
     address: config.CONTRACT_ADDRESS,
-    abi: require('../artifacts/contracts/BaseContract.sol/BaseContract.json').abi,
+    abi: baseContractJson.abi,
   });
 });
 
