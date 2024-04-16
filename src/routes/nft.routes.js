@@ -36,7 +36,7 @@ router.get('/:tokenId', async (req, res, next) => {
   });
 });
 
-router.post('/mintNft', multer().single('image'), async (req, rese, next) => {
+router.post('/mintNft', multer().single('image'), async (req, res, next) => {
   // TODO: create token metadata based on user's challenge and image ipfs url
   if (!req.file) {
     return res.send('Image file is missing!');
@@ -45,9 +45,8 @@ router.post('/mintNft', multer().single('image'), async (req, rese, next) => {
   const imageIpfsUrl = await uploadImageToIpfs(Buffer.from(image.buffer));
 
   const tokenMetadata = {
-    name: 'Fresh Lily - Fresh Market',
-    description:
-      'Treat yourself or make a perfect gift with Weekly Fresh Lily. Simply visit our store at your preferred time and collect your Lily (Max 4 weeks).',
+    name: 'Supes',
+    description: "It's a bird, It's a plane, It's superman",
     image: imageIpfsUrl,
   };
   const tokenUri = formatTokenUri(tokenMetadata);
@@ -63,8 +62,8 @@ router.post('/mintNft', multer().single('image'), async (req, rese, next) => {
   return res.status(200).send({
     message: 'NFT mint successful',
     data: {
-      txnHash: resp.hash,
       tokenId: tokenId,
+      txnHash: resp.hash,
     },
   });
 });
