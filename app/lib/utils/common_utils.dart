@@ -24,6 +24,18 @@ final Set<String> excludedWalletIds = {
   'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa'
 };
 
+W3MChainInfo fetchBaseSepolia() => W3MChainInfo(
+      chainName: 'Base Sepolia',
+      chainId: '84532',
+      namespace: 'eip155:84532',
+      tokenName: 'ETH',
+      rpcUrl: 'https://sepolia.base.org',
+      blockExplorer: W3MBlockExplorer(
+        name: 'Basescan',
+        url: 'https://sepolia.basescan.org',
+      ),
+    );
+
 W3MService getW3mInstance() {
   String projectId = '48d96f799737c01d9bca749263a6a757';
   return W3MService(

@@ -36,6 +36,24 @@ router.get('/:tokenId', async (req, res, next) => {
   });
 });
 
+router.get('/get/:address', async (req, res, next) => {
+  const address = req.params['address'];
+  const contract = await getContractInstance();
+  const tokenUri = await contract.getOwnedTokens(address);
+  console.log(tokenUri);
+
+  const unf = tokenUri.map((token) => {
+    return unformatTokenUri(token);
+  });
+
+  return res.status(200).send({
+    message: 'Token data retreived successfully',
+    data: {
+      ...unf,
+    },
+  });
+});
+
 router.post('/mintNft', multer().single('image'), async (req, res, next) => {
   // TODO: create token metadata based on user's challenge and image ipfs url
   if (!req.file) {
@@ -45,7 +63,7 @@ router.post('/mintNft', multer().single('image'), async (req, res, next) => {
   const imageIpfsUrl = await uploadImageToIpfs(Buffer.from(image.buffer));
 
   const tokenMetadata = {
-    name: 'Supes',
+    name: 'Challenge #workout 2',
     description: "It's a bird, It's a plane, It's superman",
     image: imageIpfsUrl,
   };
