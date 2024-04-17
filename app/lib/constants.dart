@@ -12,3 +12,6 @@ class CustomColors {
   final Color PRIMARY = (Colors.green[200])!;
   final Color SECONDARY = (Colors.green[300])!;
 }
+
+const openseaChain = 'base-sepolia';
+const openseaUrl = 'https://testnets.opensea.io/assets/$openseaChain';

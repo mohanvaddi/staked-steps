@@ -7,7 +7,6 @@ import 'package:staked_steps/tabs/OngoingQuests.dart';
 import 'package:staked_steps/utils/pedometer_utils.dart';
 import 'package:staked_steps/utils/api_utils.dart' as api_util;
 import 'package:staked_steps/utils/common_utils.dart';
-import 'package:staked_steps/utils/transactions.dart';
 import 'package:staked_steps/widgets/CustomScreenLayout.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 
@@ -117,10 +116,6 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                                   ),
                                 ),
                                 onTap: () async {
-                                  final chain = fetchBaseSepolia();
-                                  final resp = await fetchUserNfts(
-                                      widget.w3mService, chain);
-                                  print(resp);
                                   kPrint('click3d');
                                 },
                               );

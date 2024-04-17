@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:staked_steps/constants.dart';
 import 'package:staked_steps/tabs/OngoingQuests.dart';
+import 'package:staked_steps/utils/api_utils.dart';
 import 'package:staked_steps/utils/pedometer_utils.dart';
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:staked_steps/utils/transactions.dart';
 import 'package:staked_steps/widgets/CustomScreenLayout.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
-import 'package:full_screen_image/full_screen_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key, required this.w3mService});
@@ -57,6 +58,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  void launchOpenseUrl(List<dynamic> nftList, int index) async {
+    final contractInfo = await fetchContractInfo();
+    final tokenUrl = '$openseaUrl/${contractInfo.address}/${nftList[index].id}';
+    final Uri url = Uri.parse(tokenUrl);
+
+    final urlLaunched = await launchUrl(url);
+    if (urlLaunched) {
+      throw Exception(
+        'Could not launch $url',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,17 +117,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             itemBuilder: (BuildContext context, int index) {
                               return Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: FullScreenWidget(
-                                  disposeLevel: DisposeLevel.High,
-                                  backgroundIsTransparent: true,
-                                  backgroundColor: Colors.green.shade50,
-                                  child: Image.network(
-                                    nftList[index].image,
-                                    // fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              );
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute<void>(
+                                        builder: (BuildContext context) {
+                                          return Scaffold(
+                                            appBar: AppBar(
+                                              title: Text(nftList[index].name),
+                                            ),
+                                            body: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      5.0, 40.0, 5.0, 40.0),
+                                              child: Column(
+                                                children: [
+                                                  Image.network(
+                                                    nftList[index].image,
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10.0),
+                                                    child: TextButton.icon(
+                                                      icon: const Icon(
+                                                        Icons.link,
+                                                      ),
+                                                      label:
+                                                          const Text('Opensea'),
+                                                      onPressed: () async {
+                                                        launchOpenseUrl(
+                                                          nftList,
+                                                          index,
+                                                        );
+                                                      },
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ));
+                                    },
+                                    child: Image.network(
+                                      nftList[index].image,
+                                      // fit: BoxFit.fitWidth,
+                                    ),
+                                  ));
                             },
                           ),
                         );
