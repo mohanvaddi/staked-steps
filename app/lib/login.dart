@@ -31,7 +31,6 @@ class _LoginState extends State<Login> {
 
   void changeRoute(String eventName, Enum page) {
     debugPrint('[walletEvent] $eventName');
-    setState(() {});
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) {
@@ -47,6 +46,7 @@ class _LoginState extends State<Login> {
         }
       }),
     );
+    setState(() {});
   }
 
   void _onModalConnect(ModalConnect? event) {
@@ -68,8 +68,6 @@ class _LoginState extends State<Login> {
       }
     }
     changeRoute('_onModalError', Pages.login);
-    debugPrint('[walletEvent] _onModalError ${event?.toString()}');
-    setState(() {});
   }
 
   void _onSessionExpired(SessionExpire? event) {
@@ -110,7 +108,7 @@ class _LoginState extends State<Login> {
     await _w3mService.init();
 
     // switch to Polygon Amoy chain
-    _w3mService.selectChain(fetchAmoyChainInfo(), switchChain: true);
+    _w3mService.selectChain(fetchBaseSepolia(), switchChain: true);
 
     // if the wallet is already connected, move to home
     if (_w3mService.isConnected) {
@@ -118,6 +116,9 @@ class _LoginState extends State<Login> {
     } else {
       setState(() {});
     }
+
+    // // TODO: remove this :)
+    // changeRoute('defaultChange', Pages.home);
   }
 
   void sendTransaction() async {

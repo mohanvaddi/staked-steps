@@ -21,22 +21,6 @@ Future<List<ChallengeData>> fetchChallengeData() async {
   }
 }
 
-Future<List<Nft>> fetchNfts() async {
-  final response = await http.get(Uri.parse('$apiUrl/mockNfts'));
-
-  if (response.statusCode == 200) {
-    List<dynamic> jsonData = json.decode(response.body);
-    List<Nft> nftList = jsonData.map(
-      (nftJson) {
-        return Nft.fromJson(nftJson);
-      },
-    ).toList();
-    return nftList;
-  } else {
-    throw Exception('Failed to load nft list');
-  }
-}
-
 Future<ContractInfo> fetchContractInfo() async {
   final response = await http.get(Uri.parse('$apiUrl/contract-info'));
 
