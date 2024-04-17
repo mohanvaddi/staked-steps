@@ -8,19 +8,24 @@
     "compile": "npx hardhat compile --force --show-stack-traces",
     "clean": "npx hardhat clean",
     "dev": "nodemon --ignore app src/server.js",
+    "db": "node scripts/orbitdb.js",
     "compile:deploy": "npx hardhat compile && node scripts/deploy.js"
   },
   "keywords": [],
   "license": "ISC",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0"
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "nodemon": "^3.1.0"
   },
   "dependencies": {
+    "@chainsafe/libp2p-gossipsub": "11.1.0",
     "@lighthouse-web3/sdk": "^0.3.0",
     "@openzeppelin/contracts": "^5.0.2",
+    "@orbitdb/core": "2.1.0",
+    "blockstore-level": "1.1.7",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "multer": "1.4.5-lts.1",
-    "nodemon": "^3.1.0"
+    "helia": "4.0.0",
+    "multer": "1.4.5-lts.1"
   }
 }
