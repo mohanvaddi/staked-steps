@@ -3,6 +3,7 @@ import hardhat from 'hardhat';
 import multer from 'multer';
 import config from '../config.js';
 import { uploadImageToIpfs } from '../services/storage.service.js';
+import { createNftImage } from '../utils/nft.utils.js';
 const { ethers } = hardhat;
 
 const router = Router();
@@ -55,12 +56,14 @@ router.get('/get/:address', async (req, res, next) => {
 });
 
 router.post('/mintNft', multer().single('image'), async (req, res, next) => {
-  // TODO: create token metadata based on user's challenge and image ipfs url
   if (!req.file) {
     return res.send('Image file is missing!');
   }
   const image = req.file;
-  const imageIpfsUrl = await uploadImageToIpfs(Buffer.from(image.buffer));
+  const { text1, text2 } = req.body;
+  
+  const nftImage = await createNftImage(Buffer.from(image.buffer), text1, text2);
+  const imageIpfsUrl = await uploadImageToIpfs(nftImage);
 
   const tokenMetadata = {
     name: 'Challenge #workout 2',
