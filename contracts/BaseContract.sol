@@ -66,13 +66,12 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         _transfer(from, to, tokenId);
     }
 
-    /** Returns the number of tokens owned by the given address */
+    /** Returns the NftInfo based on tokens owned by the given address */
     function getOwnedTokens(address _owner) external view returns (NftInfo[] memory) {
         uint256 balance = balanceOf(_owner);
         NftInfo[] memory tokens = new NftInfo[](balance);
         for (uint256 i = 0; i < balance; i++) {
             uint256 tokenId = super.tokenOfOwnerByIndex(_owner, i);
-
             tokens[i] = NftInfo(tokenId, tokenURI(tokenId));
         }
         return tokens;
