@@ -37,8 +37,8 @@ class _CustomNavigationState extends State<CustomNavigation> {
             label: 'Quests',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.settings),
-            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle_outlined),
             label: 'Profile',
           ),
         ],

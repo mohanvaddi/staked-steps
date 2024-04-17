@@ -5,13 +5,20 @@ import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 
 contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
+    using Strings for uint256;
+
+    struct NftInfo {
+        uint256 id;
+        string metadata;
+    }
+
     uint256 private _tokenIds;
 
     address payable owner;
     uint256 private maxSupply = 10_000;
-    string private contractMetadata;
 
     constructor(string memory name, string memory symbol) ERC721(name, symbol) {
         owner = payable(msg.sender);
@@ -60,17 +67,27 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
     }
 
     /** Returns the number of tokens owned by the given address */
-    function getOwnedTokens(address _owner) external view returns (string[] memory) {
+    function getOwnedTokens(address _owner) external view returns (NftInfo[] memory) {
         uint256 balance = balanceOf(_owner);
-        string[] memory tokens = new string[](balance);
+        NftInfo[] memory tokens = new NftInfo[](balance);
         for (uint256 i = 0; i < balance; i++) {
-            tokens[i] = tokenURI(super.tokenOfOwnerByIndex(_owner, i));
+            uint256 tokenId = super.tokenOfOwnerByIndex(_owner, i);
+
+            tokens[i] = NftInfo(tokenId, tokenURI(tokenId));
         }
         return tokens;
     }
 
-    // function overrides
+    // function uint256ToString(uint256 value) public pure returns (string memory) {
+    //     return value.toString();
+    // }
 
+    // // gas expensive, use only in view/pure functions :)
+    // function concatenateStrings(string memory a, string memory b) public pure returns (string memory) {
+    //     return string(abi.encodePacked(a, b));
+    // }
+
+    // function overrides
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:staked_steps/constants.dart';
-import 'package:staked_steps/structs.dart';
 import 'package:staked_steps/tabs/OngoingQuests.dart';
 import 'package:staked_steps/utils/pedometer_utils.dart';
-import 'package:staked_steps/utils/api_utils.dart' as api_util;
 import 'package:staked_steps/utils/common_utils.dart';
+import 'package:staked_steps/utils/transactions.dart';
 import 'package:staked_steps/widgets/CustomScreenLayout.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 import 'package:full_screen_image/full_screen_image.dart';
@@ -23,7 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _status = '?', _steps = '?';
 
   late Future<void> futureNfts;
-  late List<Nft> nftList;
+  late List<dynamic> nftList;
 
   @override
   void initState() {
@@ -47,12 +46,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _initNftList() async {
-    final List<Nft> nfts = await api_util.fetchNfts();
+    final nfts = await fetchUserNfts(widget.w3mService, fetchBaseSepolia());
     nftList = nfts;
   }
 
   Future<void> _refreshNftList() async {
-    final nfts = await api_util.fetchNfts();
+    final nfts = await fetchUserNfts(widget.w3mService, fetchBaseSepolia());
     setState(() {
       nftList = nfts;
     });
