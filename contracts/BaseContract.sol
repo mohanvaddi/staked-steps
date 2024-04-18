@@ -51,6 +51,9 @@ struct RespChallenge {
     uint participantsLimit; // number of participants that can join the challenge
     uint goal; // goal steps needed to complete for each day
     address creator; // address of the challenge creator
+    uint status;
+    uint visibility;
+    uint participantsCount;
 }
 
 contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
@@ -138,11 +141,15 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
             challengesInfo[index].challengeId = challenges[_challengeId].challengeId;
             challengesInfo[index].challengeName = challenges[_challengeId].challengeName;
             challengesInfo[index].startDate = challenges[_challengeId].startDate;
+            challengesInfo[index].endDate = challenges[_challengeId].endDate;
             challengesInfo[index].totalDays = challenges[_challengeId].totalDays;
             challengesInfo[index].stakedAmount = challenges[_challengeId].stakedAmount;
             challengesInfo[index].participantsLimit = challenges[_challengeId].participantsLimit;
             challengesInfo[index].goal = challenges[_challengeId].goal;
             challengesInfo[index].creator = challenges[_challengeId].creator;
+            challengesInfo[index].status = uint256(challenges[_challengeId].status);
+            challengesInfo[index].visibility = uint256(challenges[_challengeId].visibility);
+            challengesInfo[index].participantsCount = challenges[_challengeId].participants.length;
             index++;
         }
 
@@ -169,11 +176,15 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
                 challengesInfo[index].challengeId = challenges[i].challengeId;
                 challengesInfo[index].challengeName = challenges[i].challengeName;
                 challengesInfo[index].startDate = challenges[i].startDate;
+                challengesInfo[index].endDate = challenges[i].endDate;
                 challengesInfo[index].totalDays = challenges[i].totalDays;
                 challengesInfo[index].stakedAmount = challenges[i].stakedAmount;
                 challengesInfo[index].participantsLimit = challenges[i].participantsLimit;
                 challengesInfo[index].goal = challenges[i].goal;
                 challengesInfo[index].creator = challenges[i].creator;
+                challengesInfo[index].status = uint256(challenges[i].status);
+                challengesInfo[index].visibility = uint256(challenges[i].visibility);
+                challengesInfo[index].participantsCount = challenges[i].participants.length;
                 index++;
             }
         }
@@ -186,7 +197,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         require(challenges[_challengeId].visibility == ChallengeVisibility.Private, 'Challenge is not private');
         require(keccak256(bytes(challenges[_challengeId].passkey)) == keccak256(bytes(_passKey)), 'Invalid passkey');
         require(msg.value == challenges[_challengeId].stakedAmount, 'Incorrect staked amount');
-        require(challenges[_challengeId].participants.length > challenges[_challengeId].participantsLimit, 'Challenge is already full');
+        require(challenges[_challengeId].participants.length < challenges[_challengeId].participantsLimit, 'Challenge is already full');
 
         for (uint i = 0; i < challenges[_challengeId].participants.length; i++) {
             require((challenges[_challengeId].participants[i].participant != msg.sender), 'User is already a participant');
@@ -206,7 +217,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
     function joinPublicChallenge(uint _challengeId) external payable {
         require(challenges[_challengeId].visibility == ChallengeVisibility.Public, 'Challenge is not public');
         require(msg.value == challenges[_challengeId].stakedAmount, 'Incorrect staked amount');
-        require(challenges[_challengeId].participants.length > challenges[_challengeId].participantsLimit, 'Challenge is already full');
+        require(challenges[_challengeId].participants.length < challenges[_challengeId].participantsLimit, 'Challenge is already full');
 
         // Check if user is already a participant in the challenge
         for (uint i = 0; i < challenges[_challengeId].participants.length; i++) {
