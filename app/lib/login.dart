@@ -57,6 +57,7 @@ class _LoginState extends State<Login> {
 
   void _onModalDisconnect(ModalDisconnect? event) {
     if (event != null) {
+      _w3mService.disconnect();
       changeRoute('_onModalDisconnect', Pages.login);
     }
   }
