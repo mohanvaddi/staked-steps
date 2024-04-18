@@ -20,30 +20,13 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _status = '?', _steps = '?';
-
   late Future<void> futureNfts;
   late List<dynamic> nftList;
 
   @override
   void initState() {
-    super.initState();
-    initPedometer(
-      (StepCount event) {
-        setState(() {
-          kPrint(event);
-          _steps = event.steps.toString();
-        });
-      },
-      (PedestrianStatus event) {
-        setState(() {
-          kPrint(event);
-          _status = event.status;
-        });
-      },
-    );
-
     futureNfts = _initNftList();
+    super.initState();
   }
 
   Future<void> _initNftList() async {
@@ -77,7 +60,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: CustomScreenLayout(
         context: context,
         w3mService: widget.w3mService,
-        steps: _steps,
         screen: Screens.PROFILE,
         body: TabBarView(
           children: <Widget>[
