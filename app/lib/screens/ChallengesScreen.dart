@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pedometer/pedometer.dart';
 import 'package:staked_steps/structs.dart';
 import 'package:staked_steps/constants.dart';
 import 'package:staked_steps/tabs/OngoingQuests.dart';
-import 'package:staked_steps/utils/pedometer_utils.dart';
 import 'package:staked_steps/utils/api_utils.dart' as api_util;
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:staked_steps/widgets/CustomScreenLayout.dart';
@@ -20,35 +18,15 @@ class ChallengesScreen extends StatefulWidget {
 }
 
 class _ChallengesScreenState extends State<ChallengesScreen> {
-  String _status = '?', _steps = '?';
   late Future<void> futureChallenges;
   late List<ChallengeData> challengesList;
   late ContractInfo contractInfo;
 
   @override
   void initState() {
-    super.initState();
-    initPedometer(
-      (StepCount event) {
-        setState(() {
-          kPrint(event);
-          _steps = event.steps.toString();
-        });
-      },
-      (PedestrianStatus event) {
-        setState(() {
-          kPrint(event);
-          _status = event.status;
-        });
-      },
-    );
-
     futureChallenges = _initChallenges();
+    super.initState();
   }
-
-  // Future<void> _initABI() async {
-  //   final ContractInfo _contractInfo = await api_util.fetchContractInfo();
-  // }
 
   Future<void> _initChallenges() async {
     final List<ChallengeData> challenges = await api_util.fetchChallengeData();
@@ -68,7 +46,6 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       body: CustomScreenLayout(
         context: context,
         w3mService: widget.w3mService,
-        steps: _steps,
         screen: Screens.CHALLENGES,
         body: TabBarView(
           children: <Widget>[
