@@ -126,8 +126,6 @@ class _LoginState extends State<Login> {
     _w3mService.launchConnectedWallet();
   }
 
-  final image = ImageProvider;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -3,6 +3,7 @@ import 'package:staked_steps/structs.dart';
 import 'package:http/http.dart' as http;
 
 const apiUrl = 'https://massive-finer-mudfish.ngrok-free.app';
+// const apiUrl = 'http://localhost:4002';
 
 Future<List<ChallengeData>> fetchChallengeData() async {
   final response = await http.get(Uri.parse('$apiUrl/mockChallenges'));

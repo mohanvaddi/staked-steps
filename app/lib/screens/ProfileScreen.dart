@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pedometer/pedometer.dart';
 import 'package:staked_steps/constants.dart';
 import 'package:staked_steps/tabs/OngoingQuests.dart';
 import 'package:staked_steps/utils/api_utils.dart';
-import 'package:staked_steps/utils/pedometer_utils.dart';
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:staked_steps/utils/transactions.dart';
 import 'package:staked_steps/widgets/CustomScreenLayout.dart';

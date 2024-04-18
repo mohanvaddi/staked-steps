@@ -73,8 +73,9 @@ class _CustomScreenLayoutState extends State<CustomScreenLayout> {
     DateTime now = DateTime.now();
     DateTime todayMidnight = DateTime(now.year, now.month, now.day);
     int? steps = await Health().getTotalStepsInInterval(todayMidnight, now);
+
     setState(() {
-      _steps = steps.toString();
+      _steps = steps != null ? steps.toString() : '0';
     });
 
     return steps;

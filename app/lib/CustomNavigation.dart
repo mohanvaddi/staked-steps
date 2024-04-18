@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:staked_steps/CreateChallengePage.dart';
 import 'package:staked_steps/screens/ChallengesScreen.dart';
 import 'package:staked_steps/screens/ProfileScreen.dart';
 import 'package:staked_steps/constants.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
+import 'package:flutter/services.dart';
 
 class CustomNavigation extends StatefulWidget {
   const CustomNavigation({super.key, required this.w3mService});
@@ -57,18 +59,11 @@ class _CustomNavigationState extends State<CustomNavigation> {
       // fab button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          HapticFeedback.lightImpact();
           Navigator.push(context, MaterialPageRoute<void>(
             builder: (BuildContext context) {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Create Quest'),
-                ),
-                body: const Center(
-                  child: Text(
-                    'form to create public and private quests here',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ),
+              return CreateChallengePage(
+                w3mService: widget.w3mService,
               );
             },
           ));
