@@ -41,6 +41,18 @@ struct Challenge {
     mapping(address => uint) participantIndex; // Maps participant's address to their index in participants array
 }
 
+struct RespChallenge {
+    uint challengeId; // unique identifier for challenge
+    string challengeName; // name of the challenge
+    uint startDate; // start date of the challenge
+    uint endDate; // endDate of the challenge
+    uint totalDays;
+    uint stakedAmount; // to have a definite value of the amount that a person can stake to participate in this challenge
+    uint participantsLimit; // number of participants that can join the challenge
+    uint goal; // goal steps needed to complete for each day
+    address creator; // address of the challenge creator
+}
+
 contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
     using Strings for uint256;
 
@@ -116,13 +128,57 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
     }
 
     // Function to get challenges joined by a user
-    function getUserChallenges(address _user) external view returns (uint[] memory) {
-        return userChallenges[_user];
+    function getUserChallenges(address _user) external view returns (RespChallenge[] memory) {
+        uint256 userChallengesCount = userChallenges[_user].length;
+
+        RespChallenge[] memory challengesInfo = new RespChallenge[](userChallengesCount);
+        uint index = 0;
+        for (uint i = 0; i < userChallengesCount; i++) {
+            uint _challengeId = userChallenges[_user][i];
+            challengesInfo[index].challengeId = challenges[_challengeId].challengeId;
+            challengesInfo[index].challengeName = challenges[_challengeId].challengeName;
+            challengesInfo[index].startDate = challenges[_challengeId].startDate;
+            challengesInfo[index].totalDays = challenges[_challengeId].totalDays;
+            challengesInfo[index].stakedAmount = challenges[_challengeId].stakedAmount;
+            challengesInfo[index].participantsLimit = challenges[_challengeId].participantsLimit;
+            challengesInfo[index].goal = challenges[_challengeId].goal;
+            challengesInfo[index].creator = challenges[_challengeId].creator;
+            index++;
+        }
+
+        return challengesInfo;
+    }
+
+    function getParticipants(uint _challengeId) external view returns (Participant[] memory) {
+        return challenges[_challengeId].participants;
     }
 
     // Function to get list of all public challenges that are open
-    function publicChallenges() external view returns (uint[] memory) {
-        return challengesByStatus[ChallengeStatus.Ongoing];
+    function publicChallenges() external view returns (RespChallenge[] memory) {
+        uint publicChallengesCount = 0;
+        for (uint i = 0; i < numChallenges; i++) {
+            if (challenges[i].visibility == ChallengeVisibility.Public) {
+                publicChallengesCount++;
+            }
+        }
+
+        RespChallenge[] memory challengesInfo = new RespChallenge[](publicChallengesCount);
+        uint index = 0;
+        for (uint i = 0; i < numChallenges; i++) {
+            if (challenges[i].visibility == ChallengeVisibility.Public) {
+                challengesInfo[index].challengeId = challenges[i].challengeId;
+                challengesInfo[index].challengeName = challenges[i].challengeName;
+                challengesInfo[index].startDate = challenges[i].startDate;
+                challengesInfo[index].totalDays = challenges[i].totalDays;
+                challengesInfo[index].stakedAmount = challenges[i].stakedAmount;
+                challengesInfo[index].participantsLimit = challenges[i].participantsLimit;
+                challengesInfo[index].goal = challenges[i].goal;
+                challengesInfo[index].creator = challenges[i].creator;
+                index++;
+            }
+        }
+
+        return challengesInfo;
     }
 
     // Function to join a private challenge by providing passkey
