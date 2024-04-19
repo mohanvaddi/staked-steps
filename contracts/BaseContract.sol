@@ -192,6 +192,28 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         return challengesInfo;
     }
 
+    function getOngoingEndedChallengeIds() external view onlyOwner returns (uint[] memory) {
+        uint[] memory ongoingEndedChallengeIds;
+        uint ongoingEndedChallengesCount = 0;
+        for (uint i = 0; i < challengesByStatus[ChallengeStatus.Ongoing].length; i++) {
+            uint challengeId = challengesByStatus[ChallengeStatus.Ongoing][i];
+            if (block.timestamp > challenges[challengeId].endDate) {
+                ongoingEndedChallengesCount++;
+            }
+        }
+
+        ongoingEndedChallengeIds = new uint[](ongoingEndedChallengesCount);
+        uint index = 0;
+        for (uint i = 0; i < challengesByStatus[ChallengeStatus.Ongoing].length; i++) {
+            uint challengeId = challengesByStatus[ChallengeStatus.Ongoing][i];
+            if (block.timestamp > challenges[challengeId].endDate) {
+                ongoingEndedChallengeIds[index] = challengeId;
+                index++;
+            }
+        }
+        return ongoingEndedChallengeIds;
+    }
+
     // Function to join a private challenge by providing passkey
     function joinPrivateChallenge(uint _challengeId, string memory _passKey) external payable {
         require(challenges[_challengeId].visibility == ChallengeVisibility.Private, 'Challenge is not private');
@@ -297,7 +319,12 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
             }
         }
 
-        require(maxDaysCompleted > 0, 'No participants have completed any days');
+        if (maxDaysCompleted == 0) {
+            challenge.status = ChallengeStatus.Completed;
+            removeFromOngoingChallengesList(_challengeId);
+            challengesByStatus[ChallengeStatus.Completed].push(_challengeId);
+            return;
+        }
 
         address[] memory winners = new address[](challenge.participants.length);
         uint winnerCount = 0;

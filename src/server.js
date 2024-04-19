@@ -2,6 +2,12 @@ import express from 'express';
 import config from './config.js';
 import nftRouter from './routes/nft.routes.js';
 import baseContractJson from '../artifacts/contracts/BaseContract.sol/BaseContract.json' assert { type: 'json' };
+import cron from "node-cron";
+import { decideWinnersCron } from './services/cron.service.js'
+
+cron.schedule('* * * * *', async () => {
+  await decideWinnersCron();
+});
 
 const app = express();
 const port = config.PORT;
