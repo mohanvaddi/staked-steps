@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:staked_steps/constants.dart';
-import 'package:staked_steps/tabs/OngoingQuests.dart';
+import 'package:staked_steps/tabs/ChallengesList.dart';
 import 'package:staked_steps/utils/api_utils.dart';
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:staked_steps/utils/transactions.dart';
@@ -62,8 +62,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: TabBarView(
           children: <Widget>[
             Center(
-              child: OngoingQuests(
+              child: ChallengesList(
                 w3mService: widget.w3mService,
+                challengesType: ChallengesType.USER_COMPLETED,
               ),
             ),
             Center(

@@ -1,15 +1,15 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:staked_steps/structs.dart';
 import 'package:staked_steps/constants.dart';
-import 'package:staked_steps/tabs/OngoingQuests.dart';
-import 'package:staked_steps/utils/api_utils.dart' as api_util;
-import 'package:staked_steps/utils/common_utils.dart';
+import 'package:staked_steps/tabs/ChallengesList.dart';
 import 'package:staked_steps/widgets/CustomScreenLayout.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 
 class ChallengesScreen extends StatefulWidget {
-  const ChallengesScreen({super.key, required this.w3mService});
+  const ChallengesScreen({
+    super.key,
+    required this.w3mService,
+  });
 
   final W3MService w3mService;
 
@@ -18,26 +18,11 @@ class ChallengesScreen extends StatefulWidget {
 }
 
 class _ChallengesScreenState extends State<ChallengesScreen> {
-  late Future<void> futureChallenges;
-  late List<ChallengeData> challengesList;
   late ContractInfo contractInfo;
 
   @override
   void initState() {
-    futureChallenges = _initChallenges();
     super.initState();
-  }
-
-  Future<void> _initChallenges() async {
-    final List<ChallengeData> challenges = await api_util.fetchChallengeData();
-    challengesList = challenges;
-  }
-
-  Future<void> _refreshChallenges() async {
-    final challenges = await api_util.fetchChallengeData();
-    setState(() {
-      challengesList = challenges;
-    });
   }
 
   @override
@@ -49,67 +34,18 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         screen: Screens.CHALLENGES,
         body: TabBarView(
           children: <Widget>[
+            // USER ONGOING CHALLENGES
             Center(
-              child: OngoingQuests(
+              child: ChallengesList(
                 w3mService: widget.w3mService,
+                challengesType: ChallengesType.USER_ONGOING,
               ),
             ),
+            // PUBLIC CHALLENGES
             Center(
-              child: FutureBuilder<void>(
-                future: futureChallenges,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) return Text('${snapshot.error}');
-
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      {
-                        return const Center(
-                          child: Text('Loading...'),
-                        );
-                      }
-                    case ConnectionState.done:
-                      {
-                        return RefreshIndicator(
-                          onRefresh: _refreshChallenges,
-                          child: ListView.separated(
-                            // padding: const EdgeInsets.all(5),
-                            itemCount: challengesList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              var challenge = challengesList[index];
-                              return ListTile(
-                                tileColor: Colors.green.shade50,
-                                title: Text(challenge.challengeName),
-                                subtitle: const Text('progress'),
-                                trailing: Text(
-                                    '${challengesList[index].stakedAmount} ETH'),
-                                enableFeedback: true,
-                                leading: CircularProgressIndicator(
-                                  color: Colors.green.shade400,
-                                  value: 0.4,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.green.shade200,
-                                  ),
-                                ),
-                                onTap: () async {
-                                  kPrint('click3d');
-                                },
-                              );
-                            },
-                            separatorBuilder: (
-                              BuildContext context,
-                              int index,
-                            ) {
-                              return const Divider(
-                                height: 4,
-                              );
-                            },
-                          ),
-                        );
-                      }
-                  }
-                },
+              child: ChallengesList(
+                w3mService: widget.w3mService,
+                challengesType: ChallengesType.PUBLIC,
               ),
             ),
           ],

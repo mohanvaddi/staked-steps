@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:staked_steps/CustomNavigation.dart';
-import 'package:staked_steps/utils/common_utils.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -14,23 +13,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String projectId = '48d96f799737c01d9bca749263a6a757';
-
   @override
   void initState() {
     super.initState();
-  }
-
-  void onPedestrianStatusError(error) {
-    kPrint('onPedestrianStatusError: $error');
-  }
-
-  void onStepCountError(error) {
-    kPrint('onStepCountError: $error');
-  }
-
-  void sendTransaction() async {
-    widget.w3mService.launchConnectedWallet();
   }
 
   @override

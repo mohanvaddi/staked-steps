@@ -95,14 +95,12 @@ class _CustomScreenLayoutState extends State<CustomScreenLayout> {
             style: GoogleFonts.teko(
               textStyle: TextStyle(
                 color: Colors.green.shade700,
-                fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.w800,
                 fontSize: 35.00,
               ),
             ),
           ),
           bottom: TabBar(
-            labelStyle: const TextStyle(),
             tabs: widget.screen == Screens.PROFILE
                 ? <Widget>[
                     Visibility(
@@ -192,13 +190,23 @@ class _CustomScreenLayoutState extends State<CustomScreenLayout> {
             IconButton(
               icon: const Icon(Icons.logout),
               tooltip: 'Log Out',
-              onPressed: () {
-                widget.w3mService.disconnect();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Wallet Disconnected.'),
-                  ),
-                );
+              onPressed: () async {
+                try {
+                  await widget.w3mService.disconnect();
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Wallet Disconnected.'),
+                    ),
+                  );
+                } catch (e) {
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Error when disconnecting wallet.'),
+                    ),
+                  );
+                }
               },
             ),
           ],
