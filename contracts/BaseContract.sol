@@ -274,7 +274,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         challengesByStatus[ChallengeStatus.Ongoing].push(_challengeId);
     }
 
-    function dailyCheckIn(uint _challengeId, uint _stepCount) external onlyOwner {
+    function dailyCheckIn(uint _challengeId, uint _stepCount) external {
         // get participant data
         uint participantIdx = challenges[_challengeId].participantIndex[msg.sender];
         Participant storage participant = challenges[_challengeId].participants[participantIdx];
@@ -286,27 +286,35 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         participant.daysCompleted += _stepCount >= challenges[_challengeId].goal ? 1 : 0;
     }
 
-    function decideWinner(uint _challengeId) external onlyOwner {
+    function decideWinners(uint _challengeId) external payable onlyOwner {
         Challenge storage challenge = challenges[_challengeId];
         require(challenge.status == ChallengeStatus.Ongoing, 'Challenge is already completed');
 
         uint maxDaysCompleted = 0;
-        address winner;
-
-        for (uint i = 0; i < challenge.participantsLimit; i++) {
-            Participant memory participant = challenge.participants[i];
-            if (participant.daysCompleted > maxDaysCompleted) {
-                maxDaysCompleted = participant.daysCompleted;
-                winner = participant.participant;
+        for (uint i = 0; i < challenge.participants.length; i++) {
+            if (challenge.participants[i].daysCompleted > maxDaysCompleted) {
+                maxDaysCompleted = challenge.participants[i].daysCompleted;
             }
         }
 
-        // TODO: change logic such that there can be multiple winners
-        // ex: suppose two participants in a challenge and both completed the challenge with a count of 2 days, both should be rewarded equally.
+        require(maxDaysCompleted > 0, 'No participants have completed any days');
 
-        require(winner != address(0), 'No winner found');
+        address[] memory winners = new address[](challenge.participants.length);
+        uint winnerCount = 0;
+        for (uint j = 0; j < challenge.participants.length; j++) {
+            if (challenge.participants[j].daysCompleted == maxDaysCompleted) {
+                winners[winnerCount] = challenge.participants[j].participant;
+                winnerCount++;
+            }
+        }
 
-        payable(winner).transfer(challenge.stakedAmount);
+        require(winnerCount > 0, 'No winners found');
+
+        uint rewardAmount = (challenge.stakedAmount * challenge.participants.length) / winnerCount;
+        for (uint m = 0; m < winnerCount; m++) {
+            require(address(this).balance >= rewardAmount, 'Insufficient contract balance');
+            payable(winners[m]).transfer(rewardAmount);
+        }
 
         challenge.status = ChallengeStatus.Completed;
         removeFromOngoingChallengesList(_challengeId);

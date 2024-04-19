@@ -1,11 +1,12 @@
 import hardhat from 'hardhat';
 import config from '../src/config.js';
 const { ethers } = hardhat;
+const ca = ''
 
 const getContractInstance = async (privateKey) => {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
   const signer = new ethers.Wallet(privateKey, provider);
-  const contract = await ethers.getContractAt('BaseContract', config.CONTRACT_ADDRESS, signer);
+  const contract = await ethers.getContractAt('BaseContract', ca, signer);
   return contract;
 };
 
@@ -97,16 +98,46 @@ const getParticipants = async(privateKey) => {
   const participants = await contract.getParticipants(0)
   console.log(participants);
 }
+
+const dailyCheckIn = async(privateKey, challengeId, stepCount) => {
+  const contract = await getContractInstance(privateKey);
+  await contract.dailyCheckIn(challengeId, stepCount)
+}
+
+const decideWinners = async (privateKey) => {
+  const contract = await getContractInstance(privateKey);
+  await contract.decideWinners(1);
+  console.log('Winners decided successfully');
+}
+
+const getContractBalance = async (privateKey) => {
+  const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
+  const balance = await provider.getBalance(ca)
+  console.log(`Contract balance: ${ethers.formatEther(balance)} ETH`);
+};
+
 try{
   const privateKey1 = ''
   const privateKey2 = ''
-  await createPublicChallenge(privateKey1);
-  await createPrivateChallenge(privateKey1);
-  await joinPublicChallenge(privateKey2);
-  await joinPrivateChallenge(privateKey2);
-  await getPublicChallenges(privateKey1);
-  await getUserChallenges(privateKey2, '');
-  await getParticipants(privateKey1)
+  const privateKey3 = ''
+  // await createPublicChallenge(privateKey1);
+  // await joinPublicChallenge(privateKey2);
+  // await createPrivateChallenge(privateKey1);
+  // await joinPrivateChallenge(privateKey2);
+  // await joinPrivateChallenge(privateKey3);
+
+  // await dailyCheckIn(privateKey1, 1, 10000);
+  // await dailyCheckIn(privateKey2, 1, 100);
+  // await dailyCheckIn(privateKey2, 0, 12345);
+  // await dailyCheckIn(privateKey2, 0, 12000);
+  // await dailyCheckIn(privateKey3, 1, 23459);
+  // // await getPublicChallenges(privateKey1);
+  // // await getUserChallenges(privateKey1, '0xB67D8d06121D0d6bAD9B8B449C3322c0139604ef');
+  // await getParticipants(privateKey1);
+  // await getContractBalance(privateKey1)
+  // await decideWinners(privateKey1)
+  // await getContractBalance(privateKey1)
+
 } catch(e) {
   console.log(e);
 }
