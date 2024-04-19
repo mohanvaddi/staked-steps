@@ -1,3 +1,5 @@
+import 'package:web3modal_flutter/web3modal_flutter.dart';
+
 class ParticipantData {
   final String name;
   final int daysCompleted;
@@ -9,39 +11,48 @@ class ParticipantData {
 }
 
 class ChallengeData {
+  final String challengeId;
   final String challengeName;
-  final DateTime startDate;
-  final DateTime endDate;
+  final String startDate;
+  final String endDate;
   final int totalDays;
   final double stakedAmount;
-  final int totalParticipants;
-  final List<ParticipantData> participants;
+  final int participantsLimit;
+  final int participantsCount;
+  final int goal;
+  final String creator;
+  final String visibility;
+  final String status;
 
   ChallengeData({
+    required this.challengeId,
     required this.challengeName,
     required this.startDate,
     required this.endDate,
     required this.totalDays,
     required this.stakedAmount,
-    required this.participants,
-    required this.totalParticipants,
+    required this.participantsLimit,
+    required this.participantsCount,
+    required this.goal,
+    required this.creator,
+    required this.visibility,
+    required this.status,
   });
 
-  factory ChallengeData.fromJson(Map<String, dynamic> json) {
+  factory ChallengeData.fromJson(List<dynamic> challenge) {
     return ChallengeData(
-      challengeName: json['challengeName'],
-      startDate: DateTime.fromMillisecondsSinceEpoch(json['startDate']),
-      endDate: DateTime.fromMillisecondsSinceEpoch(json['endDate']),
-      totalDays: json['totalDays'],
-      stakedAmount: json['stakedAmount'],
-      totalParticipants: json['totalParticipants'],
-      participants:
-          (json['participants'] as List<dynamic>).map((participantJson) {
-        return ParticipantData(
-          name: participantJson['name'],
-          daysCompleted: participantJson['daysCompleted'],
-        );
-      }).toList(),
+      challengeId: challenge[0].toString(),
+      challengeName: challenge[1].toString(),
+      startDate: challenge[2].toString(),
+      endDate: challenge[3].toString(),
+      totalDays: int.parse(challenge[4].toString()),
+      stakedAmount: challenge[5] / BigInt.from(10).pow(18),
+      participantsLimit: int.parse(challenge[6].toString()),
+      goal: int.parse(challenge[7].toString()),
+      creator: EthereumAddress.fromHex(challenge[8].toString()).toString(),
+      status: challenge[9].toString() == '0' ? 'ongoing' : 'completed',
+      visibility: challenge[10].toString() == '0' ? 'public' : 'private',
+      participantsCount: int.parse(challenge[11].toString()),
     );
   }
 }
