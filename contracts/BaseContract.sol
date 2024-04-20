@@ -23,6 +23,7 @@ struct NftInfo {
 struct Participant {
     address participant; // participant address. (address is keyword, using participant instead.)
     uint daysCompleted; // days completed for that participant in the challenge
+    uint lastCheckInDay; // Day of the last check-in
 }
 struct Challenge {
     uint challengeId; // unique identifier for challenge
@@ -54,6 +55,8 @@ struct RespChallenge {
     uint status;
     uint visibility;
     uint participantsCount;
+    uint daysCompleted;
+    uint lastCheckInDay;
 }
 
 contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
@@ -150,6 +153,9 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
             challengesInfo[index].status = uint256(challenges[_challengeId].status);
             challengesInfo[index].visibility = uint256(challenges[_challengeId].visibility);
             challengesInfo[index].participantsCount = challenges[_challengeId].participants.length;
+            uint _userIdx = challenges[_challengeId].participantIndex[_user];
+            challengesInfo[index].daysCompleted = challenges[_challengeId].participants[_userIdx].daysCompleted;
+            challengesInfo[index].lastCheckInDay = challenges[_challengeId].participants[_userIdx].lastCheckInDay;
             index++;
         }
 
@@ -226,7 +232,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         }
 
         // Add participant to the challenge
-        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0});
+        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0});
         challenges[_challengeId].participants.push(newParticipant);
 
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;
@@ -247,7 +253,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         }
 
         // Add participant to the challenge
-        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0});
+        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0});
         challenges[_challengeId].participants.push(newParticipant);
 
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;
@@ -290,23 +296,26 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         ch.status = ChallengeStatus.Ongoing;
         ch.creator = msg.sender;
 
-        ch.participants.push(Participant({participant: msg.sender, daysCompleted: 0}));
+        ch.participants.push(Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0}));
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;
         userChallenges[msg.sender].push(_challengeId);
 
         challengesByStatus[ChallengeStatus.Ongoing].push(_challengeId);
     }
 
-    function dailyCheckIn(uint _challengeId, uint _stepCount) external {
+    function dailyCheckIn(address _user, uint _challengeId, uint _stepCount) external onlyOwner {
         // get participant data
-        uint participantIdx = challenges[_challengeId].participantIndex[msg.sender];
+        uint participantIdx = challenges[_challengeId].participantIndex[_user];
         Participant storage participant = challenges[_challengeId].participants[participantIdx];
 
         require(participant.participant != address(0), 'Participant not found in challenge');
         require(challenges[_challengeId].status == ChallengeStatus.Ongoing, 'Challenge is already completed');
+        require(block.timestamp / 86400 != participant.lastCheckInDay, 'Already checked in today');
 
-        // increment daysCompleted based on the stepcount
-        participant.daysCompleted += _stepCount >= challenges[_challengeId].goal ? 1 : 0;
+        if(_stepCount >= challenges[_challengeId].goal) {
+            participant.lastCheckInDay = block.timestamp / 86400;
+            participant.daysCompleted += 1;
+        }
     }
 
     function decideWinners(uint _challengeId) external payable onlyOwner {
@@ -389,6 +398,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
 
     function _update(address to, uint256 tokenId, address auth) internal virtual override(ERC721, ERC721Enumerable) returns (address) {
         super._update(to, tokenId, auth);
+        return address(0);
     }
 
     function _increaseBalance(address account, uint128 amount) internal virtual override(ERC721, ERC721Enumerable) {
