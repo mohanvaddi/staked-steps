@@ -42,15 +42,15 @@ struct Challenge {
 }
 
 struct RespChallenge {
-    uint challengeId; // unique identifier for challenge
-    string challengeName; // name of the challenge
-    uint startDate; // start date of the challenge
-    uint endDate; // endDate of the challenge
+    uint challengeId;
+    string challengeName;
+    uint startDate;
+    uint endDate;
     uint totalDays;
-    uint stakedAmount; // to have a definite value of the amount that a person can stake to participate in this challenge
-    uint participantsLimit; // number of participants that can join the challenge
-    uint goal; // goal steps needed to complete for each day
-    address creator; // address of the challenge creator
+    uint stakedAmount;
+    uint participantsLimit;
+    uint goal;
+    address creator;
     uint status;
     uint visibility;
     uint participantsCount;
@@ -288,6 +288,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         ch.passkey = _visibility == ChallengeVisibility.Private ? _passkey : ''; // public challenges don't need passkey to join
         ch.goal = _goal;
         ch.status = ChallengeStatus.Ongoing;
+        ch.creator = msg.sender;
 
         ch.participants.push(Participant({participant: msg.sender, daysCompleted: 0}));
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;

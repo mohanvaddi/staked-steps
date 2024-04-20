@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
+import 'package:intl/intl.dart';
 
 void kPrint(Object? object) {
   if (kDebugMode) {
@@ -59,4 +60,52 @@ W3MService getW3mInstance() {
 
 Future<void> initW3mInstance() async {
   await getW3mInstance().init();
+}
+
+String epochToReadableDateTime(int epochSeconds) {
+  DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(epochSeconds * 1000);
+  DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+  String formattedDateTime = formatter.format(dateTime);
+  return formattedDateTime;
+}
+
+String formatReadableDateTime(DateTime dateTime) {
+  // List of month names
+  List<String> monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+
+  // Get day with ordinal suffix
+  String getOrdinal(int day) {
+    if (day >= 11 && day <= 13) {
+      return '${day}th';
+    }
+    switch (day % 10) {
+      case 1:
+        return '${day}st';
+      case 2:
+        return '${day}nd';
+      case 3:
+        return '${day}rd';
+      default:
+        return '${day}th';
+    }
+  }
+
+  String month = monthNames[dateTime.month - 1];
+  String ordinalDay = getOrdinal(dateTime.day);
+  String year = dateTime.year.toString();
+
+  return '${dateTime.weekday} $month $ordinalDay $year';
 }

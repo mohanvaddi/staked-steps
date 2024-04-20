@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:staked_steps/structs.dart';
 import 'package:staked_steps/utils/common_utils.dart';
@@ -44,8 +45,10 @@ Future<void> getWalletBalance(W3MService w3mService, W3MChainInfo chain) async {
   kPrint(result);
 }
 
-Future<List<dynamic>> fetchUserNfts(
-    W3MService w3mService, W3MChainInfo chain) async {
+FutureOr<List<dynamic>> fetchUserNfts(
+  W3MService w3mService,
+  W3MChainInfo chain,
+) async {
   final String accountAddress = getAccountAddress(w3mService);
 
   final result = await w3mService.requestReadContract(
@@ -68,4 +71,65 @@ Future<List<dynamic>> fetchUserNfts(
   }).toList();
 
   return nftList;
+}
+
+Future<List<ChallengeData>> fetchPublicChallenges(
+  W3MService w3mService,
+  W3MChainInfo chain,
+) async {
+  final result = await w3mService.requestReadContract(
+    deployedContract: await fetchContract(),
+    functionName: 'publicChallenges',
+    parameters: [],
+    rpcUrl: chain.rpcUrl,
+  );
+
+  final userChallenges = await w3mService.requestReadContract(
+    deployedContract: await fetchContract(),
+    functionName: 'getUserChallenges',
+    parameters: [EthereumAddress.fromHex(getAccountAddress(w3mService))],
+    rpcUrl: chain.rpcUrl,
+  );
+
+  List<dynamic> challenges = result[0];
+  final List<ChallengeData> challengesList = challenges.map((challenge) {
+    return ChallengeData.fromJson(challenge);
+  }).toList();
+
+  List<dynamic> userChallengesDynamic = userChallenges[0];
+  final List<String> userChallengesList =
+      userChallengesDynamic.map((challenge) {
+    return ChallengeData.fromJson(challenge).challengeId;
+  }).toList();
+
+  return challengesList
+      .where((challenge) => !userChallengesList.contains(challenge.challengeId))
+      .toList();
+}
+
+enum ChallengesFilter { ONGOING, COMPLETED }
+
+Future<List<ChallengeData>> fetchUserChallenges(
+    W3MService w3mService, W3MChainInfo chain, ChallengesFilter filter) async {
+  final result = await w3mService.requestReadContract(
+    deployedContract: await fetchContract(),
+    functionName: 'getUserChallenges',
+    parameters: [EthereumAddress.fromHex(getAccountAddress(w3mService))],
+    rpcUrl: chain.rpcUrl,
+  );
+
+  List<dynamic> challenges = result[0];
+  final List<ChallengeData> challengesList = challenges.map((challenge) {
+    return ChallengeData.fromJson(challenge);
+  }).toList();
+
+  if (filter == ChallengesFilter.COMPLETED) {
+    return challengesList
+        .where((challenge) => challenge.status == 'completed')
+        .toList();
+  } else {
+    return challengesList
+        .where((challenge) => challenge.status == 'ongoing')
+        .toList();
+  }
 }
