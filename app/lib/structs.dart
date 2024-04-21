@@ -23,6 +23,10 @@ class ChallengeData {
   final String creator;
   final String visibility;
   final String status;
+  final String daysCompleted;
+  final String lastCheckInDay;
+  final String isWinner;
+  final String isWinnerNftMinted;
 
   ChallengeData({
     required this.challengeId,
@@ -37,6 +41,10 @@ class ChallengeData {
     required this.creator,
     required this.visibility,
     required this.status,
+    required this.daysCompleted,
+    required this.lastCheckInDay,
+    required this.isWinner,
+    required this.isWinnerNftMinted,
   });
 
   factory ChallengeData.fromJson(List<dynamic> challenge) {
@@ -53,6 +61,10 @@ class ChallengeData {
       status: challenge[9].toString() == '0' ? 'ongoing' : 'completed',
       visibility: challenge[10].toString() == '0' ? 'public' : 'private',
       participantsCount: int.parse(challenge[11].toString()),
+      daysCompleted: challenge[12].toString(),
+      lastCheckInDay: challenge[13].toString(),
+      isWinner: challenge[14].toString(),
+      isWinnerNftMinted: challenge[15].toString(),
     );
   }
 }

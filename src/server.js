@@ -3,8 +3,9 @@ import config from './config.js';
 import nftRouter from './routes/nft.routes.js';
 import challengeRouter from './routes/challenge.routes.js';
 import baseContractJson from '../artifacts/contracts/BaseContract.sol/BaseContract.json' assert { type: 'json' };
-import cron from "node-cron";
-import { decideWinnersCron } from './services/cron.service.js'
+import cron from 'node-cron';
+import { decideWinnersCron } from './services/cron.service.js';
+import bodyParser from 'body-parser';
 
 cron.schedule('0 * * * *', async () => {
   await decideWinnersCron();
@@ -12,6 +13,9 @@ cron.schedule('0 * * * *', async () => {
 
 const app = express();
 const port = config.PORT;
+
+app.use(bodyParser.json()); // Parse application/json content
+app.use(bodyParser.urlencoded({ extended: true })); //
 
 app.get('/', (req, res) => {
   res.send('Not Dead!');

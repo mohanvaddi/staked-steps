@@ -4,9 +4,12 @@ import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:staked_steps/constants.dart';
 import 'package:staked_steps/structs.dart';
+import 'package:staked_steps/utils/api_utils.dart';
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:staked_steps/utils/transactions.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ChallengesList extends StatefulWidget {
   const ChallengesList({
@@ -149,6 +152,9 @@ class _ChallengesListState extends State<ChallengesList> {
 
   @override
   Widget build(BuildContext context) {
+    int currentEpochSeconds =
+        DateTime.now().millisecondsSinceEpoch ~/ Duration.millisecondsPerSecond;
+
     return FutureBuilder<void>(
       future: futureChallenges,
       builder: (context, snapshot) {
@@ -189,7 +195,7 @@ class _ChallengesListState extends State<ChallengesList> {
                           ? Text(
                               remainingSteps > 0
                                   ? '$remainingSteps steps left to complete today\'s goal'
-                                  : 'You\'ve reached your goal',
+                                  : 'You\'ve reached your goal for today',
                               style: GoogleFonts.teko(
                                 textStyle: const TextStyle(fontSize: 21.5),
                               ),
@@ -243,21 +249,100 @@ class _ChallengesListState extends State<ChallengesList> {
                       enableFeedback: true,
                       trailing: widget.challengesType ==
                               ChallengesType.USER_ONGOING
-                          ? TweenAnimationBuilder<double>(
-                              tween: Tween<double>(begin: 0.0, end: percentage),
-                              duration: const Duration(milliseconds: 800),
-                              builder: (context, value, _) {
-                                return CircularProgressIndicator(
-                                  backgroundColor: Colors.green.shade100,
-                                  strokeCap: StrokeCap.round,
-                                  strokeWidth: 5.5,
-                                  value: value,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.green.shade700,
+                          ? percentage < 1
+                              ? TweenAnimationBuilder<double>(
+                                  tween: Tween<double>(
+                                      begin: 0.0, end: percentage),
+                                  duration: const Duration(milliseconds: 800),
+                                  builder: (context, value, _) {
+                                    return CircularProgressIndicator(
+                                      backgroundColor: Colors.green.shade100,
+                                      strokeCap: StrokeCap.round,
+                                      strokeWidth: 5.5,
+                                      value: value,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.green.shade700,
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Visibility(
+                                  visible: currentEpochSeconds <
+                                      (int.parse(challenge.lastCheckInDay) *
+                                          86400),
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      try {
+                                        Future<http.Response> dailyCheckIn(
+                                            String userAddress,
+                                            String challengeId,
+                                            String stepCount) {
+                                          return http.post(
+                                            Uri.parse(
+                                                '$apiUrl/challenge/dailyCheckIn'),
+                                            headers: <String, String>{
+                                              'Content-Type':
+                                                  'application/json; charset=UTF-8',
+                                            },
+                                            body: jsonEncode(
+                                              <String, String>{
+                                                'userAddress': userAddress,
+                                                "challengeId": challengeId,
+                                                "stepCount": stepCount
+                                              },
+                                            ),
+                                          );
+                                        }
+
+                                        final resp = await dailyCheckIn(
+                                            widget.w3mService.session!.address!,
+                                            challenge.challengeId,
+                                            _steps.toString());
+
+                                        if (resp.statusCode == 200) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(resp.body),
+                                            ),
+                                          );
+                                        } else if (resp.statusCode == 500) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(resp.body),
+                                            ),
+                                          );
+                                        }
+                                      } catch (err) {
+                                        print(err);
+                                      }
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                        CustomColors().PRIMARY,
+                                      ),
+                                      shape: MaterialStateProperty.all<
+                                          OutlinedBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          // side: BorderSide(color: Colors.red),
+                                        ),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'CheckIn',
+                                      style: GoogleFonts.teko(
+                                        textStyle: const TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                );
-                              },
-                            )
+                                )
                           : widget.challengesType == ChallengesType.PUBLIC
                               ? ElevatedButton(
                                   style: ButtonStyle(
