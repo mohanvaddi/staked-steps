@@ -20,9 +20,9 @@ const createPublicChallenge = async (privateKey) => {
     _startDate: 1713456975,
     _endDate: 1716048975,
     _totalDays: 30,
-    _stakedAmount: ethers.parseEther('1'),
+    _stakedAmount: ethers.parseEther('0.001'),
     _participantsLimit: 25,
-    _goal: 10000,
+    _goal: 50,
     _visibility: 0,
   };
 
@@ -51,7 +51,7 @@ const createPrivateChallenge = async (privateKey) => {
     _totalDays: 30,
     _stakedAmount: ethers.parseEther('0.0001'),
     _participantsLimit: 5,
-    _goal: 10000,
+    _goal: 50,
     _visibility: 1,
     _passKey: 'MyPassKey',
   };
@@ -138,9 +138,9 @@ const getChallengeStakeAmount = async (privateKey) => {
 
 try {
   const privateKey1 = '';
-  const privateKey2 = '';
+  const privateKey2 = 'a6e7dc0e2f08f5fa30a21976eca471e05fb31e816572ee39bd0b6c9ebbe0a001';
   const privateKey3 = '';
-  // await createPublicChallenge(privateKey1);
+  await createPublicChallenge(privateKey2);
   // await joinPublicChallenge(privateKey2);
   // await createPrivateChallenge(privateKey2);
   // await joinPrivateChallenge(privateKey2);
@@ -151,7 +151,7 @@ try {
   // await dailyCheckIn(privateKey1, '', 1, 12345);
   // await dailyCheckIn(privateKey1, '', 1, 12000);
   // await dailyCheckIn(privateKey3, 1, 23459);
-  // await getPublicChallenges(privateKey1);
+  await getPublicChallenges(privateKey2);
   // await decideWinners(privateKey1)
   // await mintNft(privateKey1);
   // await getParticipants(privateKey1);

@@ -15,9 +15,13 @@ const getContractInstance = async () => {
 
 router.post('/dailyCheckIn', async (req, res) => {
   const { userAddress, challengeId, stepCount } = req.body;
-  const contract = await getContractInstance();
-  await contract.dailyCheckIn(userAddress, challengeId, stepCount);
-  return res.status(200).send("Success");
+  try {
+    const contract = await getContractInstance();
+    await contract.dailyCheckIn(userAddress, challengeId, stepCount);
+    return res.status(200).send('Success');
+  } catch (err) {
+    return res.status(500).send('Failure');
+  }
 });
 
 export default router;
