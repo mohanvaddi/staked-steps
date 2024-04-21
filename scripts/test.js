@@ -1,12 +1,16 @@
 import hardhat from 'hardhat';
 import config from '../src/config.js';
 const { ethers } = hardhat;
-const ca = ''
+
+export const formatTokenUri = (data) => {
+  return 'data:application/json;base64,' + btoa(JSON.stringify(data));
+};
+
 
 const getContractInstance = async (privateKey) => {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
   const signer = new ethers.Wallet(privateKey, provider);
-  const contract = await ethers.getContractAt('BaseContract', ca, signer);
+  const contract = await ethers.getContractAt('BaseContract', config.CONTRACT_ADDRESS, signer);
   return contract;
 };
 
@@ -95,7 +99,7 @@ const getPublicChallenges = async (privateKey) => {
 
 const getParticipants = async(privateKey) => {
   const contract = await getContractInstance(privateKey);
-  const participants = await contract.getParticipants(1)
+  const participants = await contract.getParticipants(0)
   console.log(participants);
 }
 
@@ -106,14 +110,25 @@ const dailyCheckIn = async(privateKey, userAddress, challengeId, stepCount) => {
 
 const decideWinners = async (privateKey) => {
   const contract = await getContractInstance(privateKey);
-  await contract.decideWinners(1);
+  await contract.decideWinners(0);
   console.log('Winners decided successfully');
 }
 
 const getContractBalance = async (privateKey) => {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
-  const balance = await provider.getBalance(ca)
+  const balance = await provider.getBalance(config.CONTRACT_ADDRESS)
   console.log(`Contract balance: ${ethers.formatEther(balance)} ETH`);
+};
+
+const mintNft = async (privateKey) => {
+  const contract = await getContractInstance(privateKey);
+  const tokenMetadata = {
+    name: "#1 | Days: 25",
+    description: "Staked-Steps | Marathon 24",
+    image: "imageIpfsUrl",
+  };
+  const tokenUri = formatTokenUri(tokenMetadata);
+  await contract.mintToken("", 0, tokenUri);
 };
 
 try{
@@ -131,11 +146,12 @@ try{
   // await dailyCheckIn(privateKey1, '', 1, 12345);
   // await dailyCheckIn(privateKey1, '', 1, 12000);
   // await dailyCheckIn(privateKey3, 1, 23459);
-  await getPublicChallenges(privateKey1);
-  await getUserChallenges(privateKey1, '');
-  await getParticipants(privateKey1);
-  // await getContractBalance(privateKey1)
+  // await getPublicChallenges(privateKey1);
   // await decideWinners(privateKey1)
+  // await mintNft(privateKey1);
+  // await getParticipants(privateKey1);
+  // await getUserChallenges(privateKey1, '');
+  // await getContractBalance(privateKey1)
   // await sendEth(privateKey1)
   // await getContractBalance(privateKey1)
 

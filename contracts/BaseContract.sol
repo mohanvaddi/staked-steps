@@ -24,6 +24,8 @@ struct Participant {
     address participant; // participant address. (address is keyword, using participant instead.)
     uint daysCompleted; // days completed for that participant in the challenge
     uint lastCheckInDay; // Day of the last check-in
+    uint isWinner;
+    uint isWinnerNftMinted;
 }
 struct Challenge {
     uint challengeId; // unique identifier for challenge
@@ -57,6 +59,8 @@ struct RespChallenge {
     uint participantsCount;
     uint daysCompleted;
     uint lastCheckInDay;
+    uint isWinner;
+    uint isWinnerNftMinted;
 }
 
 contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
@@ -99,14 +103,19 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
     }
 
     /** Mints a token */
-    function mintToken(string memory _tokenURI) external onlyOwner returns (uint) {
+    function mintToken(address _user, uint _challengeId, string memory _tokenURI) external onlyOwner returns (uint) {
         uint256 currentTokenId = _tokenIds;
         require(currentTokenId < maxSupply, 'Marketplace max supply reached');
+
+        uint userIndexInParticipants = challenges[_challengeId].participantIndex[_user];
+        require(challenges[_challengeId].participants[userIndexInParticipants].isWinner == 1, "Only winners are allowed to mint NFT!");
+        challenges[_challengeId].participants[userIndexInParticipants].isWinnerNftMinted = 1; 
 
         uint256 newTokenId = _tokenIds++;
 
         _safeMint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, _tokenURI);
+
         return newTokenId;
     }
 
@@ -156,6 +165,8 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
             uint _userIdx = challenges[_challengeId].participantIndex[_user];
             challengesInfo[index].daysCompleted = challenges[_challengeId].participants[_userIdx].daysCompleted;
             challengesInfo[index].lastCheckInDay = challenges[_challengeId].participants[_userIdx].lastCheckInDay;
+            challengesInfo[index].isWinner = challenges[_challengeId].participants[_userIdx].isWinner;
+            challengesInfo[index].isWinnerNftMinted = challenges[_challengeId].participants[_userIdx].isWinnerNftMinted;
             index++;
         }
 
@@ -232,7 +243,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         }
 
         // Add participant to the challenge
-        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0});
+        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0, isWinner: 0, isWinnerNftMinted: 0});
         challenges[_challengeId].participants.push(newParticipant);
 
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;
@@ -253,7 +264,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         }
 
         // Add participant to the challenge
-        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0});
+        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0, isWinner: 0, isWinnerNftMinted: 0});
         challenges[_challengeId].participants.push(newParticipant);
 
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;
@@ -296,7 +307,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         ch.status = ChallengeStatus.Ongoing;
         ch.creator = msg.sender;
 
-        ch.participants.push(Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0}));
+        ch.participants.push(Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0, isWinner: 0, isWinnerNftMinted: 0}));
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;
         userChallenges[msg.sender].push(_challengeId);
 
@@ -321,6 +332,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
     function decideWinners(uint _challengeId) external payable onlyOwner {
         Challenge storage challenge = challenges[_challengeId];
         require(challenge.status == ChallengeStatus.Ongoing, 'Challenge is already completed');
+        require(block.timestamp > challenges[_challengeId].endDate, 'Challenge is not ended yet!');
 
         uint maxDaysCompleted = 0;
         for (uint i = 0; i < challenge.participants.length; i++) {
@@ -345,12 +357,12 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
             }
         }
 
-        require(winnerCount > 0, 'No winners found');
-
         uint rewardAmount = (challenge.stakedAmount * challenge.participants.length) / winnerCount;
         for (uint m = 0; m < winnerCount; m++) {
             require(address(this).balance >= rewardAmount, 'Insufficient contract balance');
             payable(winners[m]).transfer(rewardAmount);
+            uint winnerIndexInParticipants = challenges[_challengeId].participantIndex[winners[m]];
+            challenges[_challengeId].participants[winnerIndexInParticipants].isWinner = 1;
         }
 
         challenge.status = ChallengeStatus.Completed;

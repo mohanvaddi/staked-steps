@@ -6,7 +6,7 @@ import baseContractJson from '../artifacts/contracts/BaseContract.sol/BaseContra
 import cron from "node-cron";
 import { decideWinnersCron } from './services/cron.service.js'
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 * * * *', async () => {
   await decideWinnersCron();
 });
 
