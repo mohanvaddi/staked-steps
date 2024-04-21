@@ -60,19 +60,20 @@ router.post('/mintNft', multer().single('image'), async (req, res, next) => {
     return res.send('Image file is missing!');
   }
   const image = req.file;
-  const { text1, text2 } = req.body;
+  const { userAddress, challengeId, name, description } = req.body;
   
-  const nftImage = await createNftImage(Buffer.from(image.buffer), text1, text2);
+  const nftImage = await createNftImage(Buffer.from(image.buffer), name, description);
   const imageIpfsUrl = await uploadImageToIpfs(nftImage);
 
   const tokenMetadata = {
-    name: 'Challenge #workout 2',
-    description: "It's a bird, It's a plane, It's superman",
+    name,
+    description,
     image: imageIpfsUrl,
   };
+  
   const tokenUri = formatTokenUri(tokenMetadata);
   const contract = await getContractInstance();
-  const resp = await contract.mintToken(tokenUri);
+  const resp = await contract.mintToken(userAddress, challengeId, tokenUri);
 
   const receipt = await resp.wait();
   const filter = contract.filters.Transfer(undefined, undefined);

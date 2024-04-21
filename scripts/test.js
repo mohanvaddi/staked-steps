@@ -1,12 +1,16 @@
 import hardhat from 'hardhat';
 import config from '../src/config.js';
 const { ethers } = hardhat;
-const ca = ''
+
+export const formatTokenUri = (data) => {
+  return 'data:application/json;base64,' + btoa(JSON.stringify(data));
+};
+
 
 const getContractInstance = async (privateKey) => {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
   const signer = new ethers.Wallet(privateKey, provider);
-  const contract = await ethers.getContractAt('BaseContract', ca, signer);
+  const contract = await ethers.getContractAt('BaseContract', config.CONTRACT_ADDRESS, signer);
   return contract;
 };
 
@@ -15,7 +19,7 @@ const createPublicChallenge = async (privateKey) => {
   const challengePayload = {
     _challengeName: 'Challenge #1',
     _startDate: 1713456975,
-    _endDate: 1713456975,
+    _endDate: 1716048975,
     _totalDays: 30,
     _stakedAmount: ethers.parseEther('1'),
     _participantsLimit: 25,
@@ -44,7 +48,7 @@ const createPrivateChallenge = async (privateKey) => {
   const challengePayload = {
     _challengeName: 'Challenge #2',
     _startDate: 1713456975,
-    _endDate: 1713456975,
+    _endDate: 1716048975,
     _totalDays: 30,
     _stakedAmount: ethers.parseEther('2'),
     _participantsLimit: 5,
@@ -95,38 +99,36 @@ const getPublicChallenges = async (privateKey) => {
 
 const getParticipants = async(privateKey) => {
   const contract = await getContractInstance(privateKey);
-  const participants = await contract.getParticipants(1)
+  const participants = await contract.getParticipants(0)
   console.log(participants);
 }
 
-const dailyCheckIn = async(privateKey, challengeId, stepCount) => {
+const dailyCheckIn = async(privateKey, userAddress, challengeId, stepCount) => {
   const contract = await getContractInstance(privateKey);
-  await contract.dailyCheckIn(challengeId, stepCount)
+  await contract.dailyCheckIn(userAddress, challengeId, stepCount)
 }
 
 const decideWinners = async (privateKey) => {
   const contract = await getContractInstance(privateKey);
-  await contract.decideWinners('3');
+  await contract.decideWinners(0);
   console.log('Winners decided successfully');
-}
-
-const getOngoingEndedChallengeIds = async (privateKey) => {
-  const contract = await getContractInstance(privateKey);
-  const response = await contract.getOngoingEndedChallengeIds();
-  const responseStringified = response.map(id => id.toString());
-  
-  console.log(responseStringified);
 }
 
 const getContractBalance = async (privateKey) => {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
-  const balance = await provider.getBalance(ca)
+  const balance = await provider.getBalance(config.CONTRACT_ADDRESS)
   console.log(`Contract balance: ${ethers.formatEther(balance)} ETH`);
 };
 
-const sendEth = async (privateKey) => {
+const mintNft = async (privateKey) => {
   const contract = await getContractInstance(privateKey);
-  await contract.sendEth('', ethers.parseEther('3'));
+  const tokenMetadata = {
+    name: "#1 | Days: 25",
+    description: "Staked-Steps | Marathon 24",
+    image: "imageIpfsUrl",
+  };
+  const tokenUri = formatTokenUri(tokenMetadata);
+  await contract.mintToken("", 0, tokenUri);
 };
 
 try{
@@ -139,19 +141,20 @@ try{
   // await joinPrivateChallenge(privateKey2);
   // await joinPrivateChallenge(privateKey3);
 
-  // await dailyCheckIn(privateKey1, 13, 10000);
-  // await dailyCheckIn(privateKey2, 3, 100);
-  // await dailyCheckIn(privateKey2, 0, 12345);
-  // await dailyCheckIn(privateKey2, 0, 12000);
+  // await dailyCheckIn(privateKey1, '', 0, 10100);
+  // await dailyCheckIn(privateKey1, '', 0, 100);
+  // await dailyCheckIn(privateKey1, '', 1, 12345);
+  // await dailyCheckIn(privateKey1, '', 1, 12000);
   // await dailyCheckIn(privateKey3, 1, 23459);
   // await getPublicChallenges(privateKey1);
-  // await getUserChallenges(privateKey1, '0xB67D8d06121D0d6bAD9B8B449C3322c0139604ef');
-  // await getParticipants(privateKey1);
-  // await getContractBalance(privateKey1)
   // await decideWinners(privateKey1)
-  // await getOngoingEndedChallengeIds(privateKey1)
+  // await mintNft(privateKey1);
+  // await getParticipants(privateKey1);
+  // await getUserChallenges(privateKey1, '');
+  // await getContractBalance(privateKey1)
   // await sendEth(privateKey1)
   // await getContractBalance(privateKey1)
+
 } catch(e) {
   console.log(e);
 }
