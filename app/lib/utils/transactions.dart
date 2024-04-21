@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:staked_steps/constants.dart';
 import 'package:staked_steps/structs.dart';
 import 'package:staked_steps/utils/common_utils.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 import 'package:staked_steps/utils/api_utils.dart' as api_util;
+import 'package:http/http.dart' as http;
 
 Future<DeployedContract> fetchContract() async {
   final contract = await api_util.fetchContractInfo();
@@ -131,5 +135,154 @@ Future<List<ChallengeData>> fetchUserChallenges(
     return challengesList
         .where((challenge) => challenge.status == 'ongoing')
         .toList();
+  }
+}
+
+Future<dynamic> customReadContract(W3MService w3mService, String functionName,
+    List<dynamic> parameters) async {
+  final contract = await fetchContract();
+  try {
+    final result = await w3mService.requestReadContract(
+      deployedContract: contract,
+      functionName: functionName,
+      parameters: [...parameters],
+      rpcUrl: currentChain.rpcUrl,
+    );
+    return result;
+  } catch (e) {
+    print(e);
+  }
+}
+
+Future<void> customWriteContract(
+  W3MService w3mService,
+  String functionName,
+  List<dynamic> parameters,
+  EtherAmount value,
+) async {
+  final contract = await fetchContract();
+  final transferFunc = contract.function(functionName);
+
+  // final chainId = currentChain.chainId;
+  // final chainNamespace = currentChain.namespace;
+  // final jsonRpcUrl = currentChain.rpcUrl;
+
+  if (w3mService.selectedChain!.namespace != currentChain.namespace) {
+    await w3mService.selectChain(currentChain, switchChain: true);
+  }
+
+  final ethClient = Web3Client(
+    W3MChainPresets.chains[w3mService.session?.chainId]!.rpcUrl,
+    http.Client(),
+  );
+
+  Credentials credentials = CustomCredentialsSender(
+    signEngine: w3mService.web3App!.signEngine,
+    sessionTopic: w3mService.session!.topic!,
+    chainId: w3mService.selectedChain!.namespace,
+    credentialAddress: EthereumAddress.fromHex(w3mService.session!.address!),
+  );
+
+  final transaction = Transaction.callContract(
+    contract: contract,
+    function: transferFunc,
+    parameters: [...parameters],
+    value: value,
+  );
+
+  await w3mService.launchConnectedWallet();
+  final result = ethClient.sendTransaction(
+    credentials,
+    transaction,
+    chainId: int.parse(w3mService.selectedChain!.chainId),
+  );
+
+  w3mService.addListener(() {
+    result;
+  });
+}
+
+class CustomCredentialsSender extends CustomTransactionSender {
+  CustomCredentialsSender({
+    required this.signEngine,
+    required this.sessionTopic,
+    required this.chainId,
+    required this.credentialAddress,
+  });
+
+  final ISignEngine signEngine;
+  final String sessionTopic;
+  final String chainId;
+  final EthereumAddress credentialAddress;
+
+  @override
+  EthereumAddress get address => credentialAddress;
+
+  @override
+  Future<String> sendTransaction(Transaction transaction) async {
+    if (kDebugMode) {
+      print(
+          'CustomCredentialsSender: sendTransaction - transaction: ${transaction}');
+    }
+
+    if (!signEngine.getActiveSessions().keys.contains(sessionTopic)) {
+      if (kDebugMode) {
+        print(
+            'sendTransaction - called with invalid sessionTopic: $sessionTopic');
+      }
+      return 'Internal Error - sendTransaction - called with invalid sessionTopic';
+    }
+
+    SessionRequestParams sessionRequestParams = SessionRequestParams(
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          'from': transaction.from?.hex ?? credentialAddress.hex,
+          'to': transaction.to?.hex,
+          'data':
+              (transaction.data != null) ? bytesToHex(transaction.data!) : null,
+          if (transaction.value != null)
+            'value':
+                '0x${transaction.value?.getInWei.toRadixString(16) ?? '0'}',
+          if (transaction.maxGas != null)
+            'gas': '0x${transaction.maxGas?.toRadixString(16)}',
+          if (transaction.gasPrice != null)
+            'gasPrice': '0x${transaction.gasPrice?.getInWei.toRadixString(16)}',
+          if (transaction.nonce != null) 'nonce': transaction.nonce,
+        }
+      ],
+    );
+
+    if (kDebugMode) {
+      print(
+          'CustomCredentialsSender: sendTransaction - blockchain $chainId, sessionRequestParams: ${sessionRequestParams.toJson()}');
+    }
+
+    final hash = await signEngine.request(
+      topic: sessionTopic,
+      chainId: chainId,
+      request: sessionRequestParams,
+    );
+    return hash;
+  }
+
+  @override
+  Future<EthereumAddress> extractAddress() {
+    // TODO: implement extractAddress
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<MsgSignature> signToSignature(Uint8List payload,
+      {int? chainId, bool isEIP1559 = false}) {
+    // TODO: implement signToSignature
+    throw UnimplementedError();
+  }
+
+  @override
+  MsgSignature signToEcSignature(Uint8List payload,
+      {int? chainId, bool isEIP1559 = false}) {
+    // TODO: implement signToEcSignature
+    throw UnimplementedError();
   }
 }

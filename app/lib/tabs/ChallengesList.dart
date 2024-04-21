@@ -37,7 +37,6 @@ class _ChallengesListState extends State<ChallengesList> {
         }
         break;
 
-      // TODO: work on USER_COMPLETED and USER_ONGOING cases
       case ChallengesType.USER_ONGOING:
         {
           final challenges = await fetchUserChallenges(
@@ -70,7 +69,6 @@ class _ChallengesListState extends State<ChallengesList> {
         }
         break;
 
-      // TODO: work on USER_COMPLETED and USER_ONGOING cases
       case ChallengesType.USER_ONGOING:
         {
           final challenges = await fetchUserChallenges(
@@ -199,7 +197,7 @@ class _ChallengesListState extends State<ChallengesList> {
                           : widget.challengesType ==
                                   ChallengesType.USER_COMPLETED
                               ? Text(
-                                  'Challenge completed on \n ${formatReadableDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse(challenge.endDate + '000')))}',
+                                  'Challenge completed on \n ${formatReadableDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse('${challenge.endDate}000')))}',
                                   style: GoogleFonts.teko(
                                     textStyle: const TextStyle(fontSize: 21.5),
                                   ),
@@ -216,7 +214,7 @@ class _ChallengesListState extends State<ChallengesList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            toTitleCase(challenge.visibility),
+                            '${toTitleCase(challenge.visibility)} ${challenge.challengeId}',
                             style: GoogleFonts.teko(
                               textStyle: TextStyle(
                                 fontSize: 16,
@@ -231,7 +229,7 @@ class _ChallengesListState extends State<ChallengesList> {
                             height: 4,
                           ),
                           Text(
-                            '${challenge.stakedAmount} $token',
+                            '${getDoubleFromBigIntETH(BigInt.from(num.parse(challenge.stakedAmount)))} $token',
                             style: GoogleFonts.teko(
                               textStyle: const TextStyle(
                                 fontSize: 16,
@@ -276,8 +274,20 @@ class _ChallengesListState extends State<ChallengesList> {
                                       ),
                                     ),
                                   ),
-                                  onPressed: () {
-                                    // TODO: initiate transaction and join challenge
+                                  onPressed: () async {
+                                    await customWriteContract(
+                                      widget.w3mService,
+                                      'joinPublicChallenge',
+                                      [
+                                        BigInt.from(
+                                          num.parse(challenge.challengeId),
+                                        ),
+                                      ],
+                                      EtherAmount.fromBigInt(
+                                        EtherUnit.wei,
+                                        BigInt.parse(challenge.stakedAmount),
+                                      ),
+                                    );
                                   },
                                   child: Text(
                                     'Stake & Join',
@@ -324,9 +334,7 @@ class _ChallengesListState extends State<ChallengesList> {
                     BuildContext context,
                     int index,
                   ) {
-                    return const Divider(
-                      height: 4,
-                    );
+                    return const Divider(height: 2);
                   },
                 ),
               );

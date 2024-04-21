@@ -16,7 +16,7 @@ class ChallengeData {
   final String startDate;
   final String endDate;
   final int totalDays;
-  final double stakedAmount;
+  final String stakedAmount;
   final int participantsLimit;
   final int participantsCount;
   final int goal;
@@ -46,7 +46,7 @@ class ChallengeData {
       startDate: challenge[2].toString(),
       endDate: challenge[3].toString(),
       totalDays: int.parse(challenge[4].toString()),
-      stakedAmount: challenge[5] / BigInt.from(10).pow(18),
+      stakedAmount: challenge[5].toString(),
       participantsLimit: int.parse(challenge[6].toString()),
       goal: int.parse(challenge[7].toString()),
       creator: EthereumAddress.fromHex(challenge[8].toString()).toString(),

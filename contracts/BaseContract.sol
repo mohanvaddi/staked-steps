@@ -108,8 +108,8 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         require(currentTokenId < maxSupply, 'Marketplace max supply reached');
 
         uint userIndexInParticipants = challenges[_challengeId].participantIndex[_user];
-        require(challenges[_challengeId].participants[userIndexInParticipants].isWinner == 1, "Only winners are allowed to mint NFT!");
-        challenges[_challengeId].participants[userIndexInParticipants].isWinnerNftMinted = 1; 
+        require(challenges[_challengeId].participants[userIndexInParticipants].isWinner == 1, 'Only winners are allowed to mint NFT!');
+        challenges[_challengeId].participants[userIndexInParticipants].isWinnerNftMinted = 1;
 
         uint256 newTokenId = _tokenIds++;
 
@@ -243,7 +243,13 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         }
 
         // Add participant to the challenge
-        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0, isWinner: 0, isWinnerNftMinted: 0});
+        Participant memory newParticipant = Participant({
+            participant: msg.sender,
+            daysCompleted: 0,
+            lastCheckInDay: 0,
+            isWinner: 0,
+            isWinnerNftMinted: 0
+        });
         challenges[_challengeId].participants.push(newParticipant);
 
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;
@@ -264,7 +270,13 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         }
 
         // Add participant to the challenge
-        Participant memory newParticipant = Participant({participant: msg.sender, daysCompleted: 0, lastCheckInDay: 0, isWinner: 0, isWinnerNftMinted: 0});
+        Participant memory newParticipant = Participant({
+            participant: msg.sender,
+            daysCompleted: 0,
+            lastCheckInDay: 0,
+            isWinner: 0,
+            isWinnerNftMinted: 0
+        });
         challenges[_challengeId].participants.push(newParticipant);
 
         challenges[_challengeId].participantIndex[msg.sender] = challenges[_challengeId].participants.length - 1;
@@ -323,7 +335,7 @@ contract BaseContract is ERC721URIStorage, ReentrancyGuard, ERC721Enumerable {
         require(challenges[_challengeId].status == ChallengeStatus.Ongoing, 'Challenge is already completed');
         require(block.timestamp / 86400 != participant.lastCheckInDay, 'Already checked in today');
 
-        if(_stepCount >= challenges[_challengeId].goal) {
+        if (_stepCount >= challenges[_challengeId].goal) {
             participant.lastCheckInDay = block.timestamp / 86400;
             participant.daysCompleted += 1;
         }

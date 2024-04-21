@@ -6,7 +6,6 @@ export const formatTokenUri = (data) => {
   return 'data:application/json;base64,' + btoa(JSON.stringify(data));
 };
 
-
 const getContractInstance = async (privateKey) => {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
   const signer = new ethers.Wallet(privateKey, provider);
@@ -50,11 +49,11 @@ const createPrivateChallenge = async (privateKey) => {
     _startDate: 1713456975,
     _endDate: 1716048975,
     _totalDays: 30,
-    _stakedAmount: ethers.parseEther('2'),
+    _stakedAmount: ethers.parseEther('0.0001'),
     _participantsLimit: 5,
     _goal: 10000,
     _visibility: 1,
-    _passKey: "MyPassKey"
+    _passKey: 'MyPassKey',
   };
 
   const transaction = await contract.createChallenge(
@@ -71,7 +70,7 @@ const createPrivateChallenge = async (privateKey) => {
   );
 
   await transaction.wait();
-}
+};
 
 const joinPublicChallenge = async (privateKey) => {
   const contract = await getContractInstance(privateKey);
@@ -81,7 +80,7 @@ const joinPublicChallenge = async (privateKey) => {
 
 const joinPrivateChallenge = async (privateKey) => {
   const contract = await getContractInstance(privateKey);
-  const transaction = await contract.joinPrivateChallenge(1, "MyPassKey", { value: ethers.parseEther('2') });
+  const transaction = await contract.joinPrivateChallenge(1, 'MyPassKey', { value: ethers.parseEther('2') });
   await transaction.wait();
 };
 
@@ -97,47 +96,53 @@ const getPublicChallenges = async (privateKey) => {
   console.log(challenges);
 };
 
-const getParticipants = async(privateKey) => {
+const getParticipants = async (privateKey) => {
   const contract = await getContractInstance(privateKey);
-  const participants = await contract.getParticipants(0)
+  const participants = await contract.getParticipants(0);
   console.log(participants);
-}
+};
 
-const dailyCheckIn = async(privateKey, userAddress, challengeId, stepCount) => {
+const dailyCheckIn = async (privateKey, userAddress, challengeId, stepCount) => {
   const contract = await getContractInstance(privateKey);
-  await contract.dailyCheckIn(userAddress, challengeId, stepCount)
-}
+  await contract.dailyCheckIn(userAddress, challengeId, stepCount);
+};
 
 const decideWinners = async (privateKey) => {
   const contract = await getContractInstance(privateKey);
   await contract.decideWinners(0);
   console.log('Winners decided successfully');
-}
+};
 
 const getContractBalance = async (privateKey) => {
   const provider = new ethers.JsonRpcProvider(config.JSON_RPC_URL);
-  const balance = await provider.getBalance(config.CONTRACT_ADDRESS)
+  const balance = await provider.getBalance(config.CONTRACT_ADDRESS);
   console.log(`Contract balance: ${ethers.formatEther(balance)} ETH`);
 };
 
 const mintNft = async (privateKey) => {
   const contract = await getContractInstance(privateKey);
   const tokenMetadata = {
-    name: "#1 | Days: 25",
-    description: "Staked-Steps | Marathon 24",
-    image: "imageIpfsUrl",
+    name: '#1 | Days: 25',
+    description: 'Staked-Steps | Marathon 24',
+    image: 'imageIpfsUrl',
   };
   const tokenUri = formatTokenUri(tokenMetadata);
-  await contract.mintToken("", 0, tokenUri);
+  await contract.mintToken('', 0, tokenUri);
 };
 
-try{
-  const privateKey1 = ''
-  const privateKey2 = ''
-  const privateKey3 = ''
+const getChallengeStakeAmount = async (privateKey) => {
+  const contract = await getContractInstance(privateKey);
+  const res = await contract.getChallengeStakeAmount('0');
+  console.log(res);
+};
+
+try {
+  const privateKey1 = '';
+  const privateKey2 = '';
+  const privateKey3 = '';
   // await createPublicChallenge(privateKey1);
   // await joinPublicChallenge(privateKey2);
-  // await createPrivateChallenge(privateKey1);
+  // await createPrivateChallenge(privateKey2);
   // await joinPrivateChallenge(privateKey2);
   // await joinPrivateChallenge(privateKey3);
 
@@ -154,7 +159,6 @@ try{
   // await getContractBalance(privateKey1)
   // await sendEth(privateKey1)
   // await getContractBalance(privateKey1)
-
-} catch(e) {
+} catch (e) {
   console.log(e);
 }

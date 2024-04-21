@@ -36,7 +36,7 @@ class _CustomNavigationState extends State<CustomNavigation> {
           NavigationDestination(
             selectedIcon: Icon(Icons.access_time_filled),
             icon: Icon(Icons.access_time_outlined),
-            label: 'Quests',
+            label: 'Challenges',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.account_circle),
