@@ -49,8 +49,9 @@ class _LoginState extends State<Login> {
     setState(() {});
   }
 
-  void _onModalConnect(ModalConnect? event) {
+  void _onModalConnect(ModalConnect? event) async {
     if (event != null) {
+      _w3mService.selectChain(fetchBaseSepolia(), switchChain: true);
       changeRoute('_onModalConnet', Pages.home);
     }
   }
@@ -108,7 +109,6 @@ class _LoginState extends State<Login> {
     // init _w3mService
     await _w3mService.init();
 
-    // switch to Polygon Amoy chain
     _w3mService.selectChain(fetchBaseSepolia(), switchChain: true);
 
     // if the wallet is already connected, move to home

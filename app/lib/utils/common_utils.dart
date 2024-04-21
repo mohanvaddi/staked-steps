@@ -1,4 +1,8 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:staked_steps/constants.dart';
+import 'package:staked_steps/home.dart';
+import 'package:staked_steps/login.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -58,8 +62,70 @@ W3MService getW3mInstance() {
   );
 }
 
-Future<void> initW3mInstance() async {
-  await getW3mInstance().init();
+Future<W3MService> initW3mInstance(BuildContext context, setState) async {
+  final w3mService = getW3mInstance();
+  w3mService.init();
+
+  void onModalConnect(ModalConnect? event) async {
+    if (event != null) {
+      w3mService.selectChain(fetchBaseSepolia(), switchChain: true);
+      changeRoute('_onModalConnet', context, w3mService, Pages.home, setState);
+    }
+  }
+
+  void onModalDisconnect(ModalDisconnect? event) {
+    if (event != null) {
+      if (w3mService.isConnected) {
+        w3mService.disconnect();
+      }
+    }
+    changeRoute(
+        '_onModalDisconnect', context, w3mService, Pages.login, setState);
+  }
+
+  void onModalError(ModalError? event) {
+    if (event != null) {
+      if ((event.message).contains('Coinbase Wallet Error')) {
+        w3mService.disconnect();
+      }
+    }
+    changeRoute('_onModalError', context, w3mService, Pages.login, setState);
+  }
+
+  void onSessionUpdate(SessionUpdate? event) {
+    if (event != null) {
+      if (!w3mService.isConnected) {
+        changeRoute('disconnected on session update', context, w3mService,
+            Pages.login, setState);
+      }
+      debugPrint('[walletEvent] _onSessionUpdate ${event.toString()}');
+    }
+  }
+
+  void onSessionEvent(SessionEvent? event) {
+    if (event != null) {
+      debugPrint('[walletEvent] _onSessionEvent ${event.toString()}');
+    }
+  }
+
+  w3mService.onModalConnect.subscribe(onModalConnect);
+  w3mService.onModalDisconnect.subscribe(onModalDisconnect);
+  w3mService.onModalError.subscribe(onModalError);
+  w3mService.onSessionUpdateEvent.subscribe(onSessionUpdate);
+  w3mService.onSessionEventEvent.subscribe(onSessionEvent);
+
+  if (w3mService.isConnected) {
+    changeRoute('_default', context, w3mService, Pages.home, setState);
+  }
+  setState(() {});
+
+  w3mService.selectChain(fetchBaseSepolia(), switchChain: true);
+
+  return w3mService;
+}
+
+double getDoubleFromBigIntETH(BigInt value) {
+  return value / BigInt.from(10).pow(18);
 }
 
 String epochToReadableDateTime(int epochSeconds) {
@@ -108,4 +174,26 @@ String formatReadableDateTime(DateTime dateTime) {
   String year = dateTime.year.toString();
 
   return '${dateTime.weekday} $month $ordinalDay $year';
+}
+
+void changeRoute(String eventName, BuildContext context, W3MService w3mService,
+    Enum page, setState) {
+  debugPrint('[walletEvent] $eventName');
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) {
+      if (page == Pages.home) {
+        w3mService.selectChain(fetchBaseSepolia(), switchChain: true);
+        return Home(
+          title: 'Staked Steps',
+          w3mService: w3mService,
+        );
+      } else {
+        return const Login(
+          title: 'Staked Steps',
+        );
+      }
+    }),
+  );
+  setState(() {});
 }
